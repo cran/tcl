@@ -32,10 +32,13 @@
 #' @keywords htest
 #' @export
 #' @examples
+#' \dontrun{
 #' # Rasch model with beta_1 restricted to 0
 #' y <- eRm::raschdat1
 #' res <- eRm::RM(X = y, sum0 = FALSE)
 #' mat <- tcl_hessian(X = y, eta = res$etapar, model = "RM")
+#'
+#' }
 
 tcl_hessian <-function( X, eta, W, model = "RM") {
 # X = observed data matrix

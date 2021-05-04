@@ -4,31 +4,32 @@
 #        Institute of Psychology
 #        Statistics and Psychometrics Working Group
 #
-# tcl_LRtest.Rm
+# tcl_splitcr
 #
 # Part of R/tlc - Testing in Conditional Likelihood Context package
 #
 # This file contains a routine that is adopted from orignal eRm function
-# "LRtest.Rm" by adding a normalization condition (sum0 = FALSE).
+# "LRtest.Rm"
 # original URL: https://github.com/cran/eRm/blob/master/R/LRtest.Rm.R
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 09/09/2019
+# copyright (c) 2021, Last Modified 22/04/2021
 ######################################################################
 
-tcl_LRtest.Rm <-
-    function(object, splitcr = "median",
-             se = TRUE, sum0 = FALSE) { # argument sum0=False added AK 2019-08-15
-  # performs Andersen LR-test
-  # object... object of class RM
+tcl_splitcr <- function(X, splitcr = "median", model ="RM") {
   # splitcr... splitting criterion for LR-groups. "all.r" corresponds to a complete
   #            raw score split (r=1,...,k-1), "median" to a median raw score split,
   #            "mean" corresponds to the mean raw score split.
   #            optionally also a vector of length n for group split can be submitted.
-  # se...whether standard errors should be computed
-  # "sum0" added in "objectg <-  RM ..." etc.
 
   call <- match.call()
+
+  colnames(X) <- paste("I",1:ncol(X),sep="")
+  rownames(X) <- paste0("P", seq_len(nrow(X)))
+
+  object <- list()
+  object$X <- X
+  object$model <- model
 
   spl.gr <- NULL
 
@@ -164,7 +165,7 @@ tcl_LRtest.Rm <-
     warning(paste0("\n", prettyPaste("The following items were excluded due to inappropriate response patterns within subgroups:"),
                    "\n", paste(colnames(object$X)[del.pos], collapse = " "),
                    "\n\n", prettyPaste("Full and subgroup models are estimated without these items!")),
-            immediate. = TRUE)
+            call. = FALSE, immediate. = TRUE)
   }  ### end MjM 2013-01-27
 
 
@@ -186,83 +187,85 @@ tcl_LRtest.Rm <-
     Xlist.n <- c(Xlist.n, list(X.el[excl_0_k, ]))  # X.el added since we must refit whole group without del.pos items
   }  ### end MjM 2012-03-18
 
-  if (object$model == "RM") {
-    likpar <- sapply(Xlist.n, function(x) {
-      # matrix with loglik and npar for each subgroup
-      # objectg <- RM(x,se=se) # original eRm code !!
-      objectg <- eRm::RM(x, se = se, sum0 = sum0)  # argument "sum0" added added AK 2019-08-15
-      likg <- objectg$loglik
-      nparg <- length(objectg$etapar)
-      # betalab <- colnames(objectg$X)
-      list(likg, nparg, objectg$betapar, objectg$etapar,
-           objectg$se.beta, outobj = objectg)  # rh outobj added
-      ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
-      ### # rh outobj added
-    })
-  }
-  if (object$model == "PCM") {
-    likpar <- sapply(Xlist.n, function(x) {
-      # matrix with loglik and npar for each subgroup
-      # objectg <- PCM(x,se=se) # original eRm code !!
-      objectg <- eRm::PCM(x, se = se, sum0 = sum0)   # argument "sum0" added added AK 2019-08-15
-      likg <- objectg$loglik
-      nparg <- length(objectg$etapar)
-      list(likg, nparg, objectg$betapar, objectg$etapar,
-           objectg$se.beta, outobj = objectg)  # rh outobj added
-      ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
-      ### # rh outobj added
-    })
-  }
-  if (object$model == "RSM") {
-    likpar <- sapply(Xlist.n, function(x) {
-      # matrix with loglik and npar for each subgroup
-      # objectg <- RSM(x,se=se) # original eRm code !!
-      objectg <- eRm::RSM(x, se = se, sum0 = sum0)  # argument "sum0" added AK 2019-08-15
-      likg <- objectg$loglik
-      nparg <- length(objectg$etapar)
-      list(likg, nparg, objectg$betapar, objectg$etapar,
-           objectg$se.beta, outobj = objectg)  # rh outobj added
-      ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
-      ### # rh outobj added
-    })
-  }
+  ## code block commented out AK 24-04-2021
+  # if (object$model == "RM") {
+  #   likpar <- sapply(Xlist.n, function(x) {
+  #     # matrix with loglik and npar for each subgroup
+  #     # objectg <- RM(x,se=se) # original eRm code !!
+  #     objectg <- eRm::RM(x, se = se, sum0 = sum0)  # argument "sum0" added AK 2019-08-15
+  #     likg <- objectg$loglik
+  #     nparg <- length(objectg$etapar)
+  #     # betalab <- colnames(objectg$X)
+  #     list(likg, nparg, objectg$betapar, objectg$etapar,
+  #          objectg$se.beta, outobj = objectg)  # rh outobj added
+  #     ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
+  #     ### # rh outobj added
+  #   })
+  # }
+  # if (object$model == "PCM") {
+  #   likpar <- sapply(Xlist.n, function(x) {
+  #     # matrix with loglik and npar for each subgroup
+  #     # objectg <- PCM(x,se=se) # original eRm code !!
+  #     objectg <- eRm::PCM(x, se = se, sum0 = sum0)   # argument "sum0" added added AK 2019-08-15
+  #     likg <- objectg$loglik
+  #     nparg <- length(objectg$etapar)
+  #     list(likg, nparg, objectg$betapar, objectg$etapar,
+  #          objectg$se.beta, outobj = objectg)  # rh outobj added
+  #     ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
+  #     ### # rh outobj added
+  #   })
+  # }
+  # if (object$model == "RSM") {
+  #   likpar <- sapply(Xlist.n, function(x) {
+  #     # matrix with loglik and npar for each subgroup
+  #     # objectg <- RSM(x,se=se) # original eRm code !!
+  #     objectg <- eRm::RSM(x, se = se, sum0 = sum0)  # argument "sum0" added AK 2019-08-15
+  #     likg <- objectg$loglik
+  #     nparg <- length(objectg$etapar)
+  #     list(likg, nparg, objectg$betapar, objectg$etapar,
+  #          objectg$se.beta, outobj = objectg)  # rh outobj added
+  #     ### list(likg,nparg,objectg$betapar,objectg$etapar,objectg$se.beta)
+  #     ### # rh outobj added
+  #   })
+  # }
+  #
+  # ## extract fitted splitgroup models # rh 02-05-2010 begin MjM
+  # ## 2012-03-18
+  # if (ifelse(length(splitcr) == 1, splitcr != "all.r", TRUE)) {
+  #   fitobj <- likpar[6, 1:length(unique(rvind))]
+  # } else {
+  #   fitobj <- likpar[6, 1:length(unique(rvind[excl_0_k]))]
+  # }  ### end MjM 2012-03-18
+  # likpar <- likpar[-6, ]
+  #
+  # if ((length(del.pos) > 0) | ifelse(length(splitcr) == 1,
+  #                                    splitcr == "all.r", FALSE)) {
+  #   # re-estimate full model ### MjM 2012-03-18
+  #   pos <- length(Xlist.n)  #position of the full model
+  #   loglik.all <- likpar[1, pos][[1]]  #loglik full model
+  #   # etapar.all <- rep(0,likpar[2,pos]) #etapar full model
+  #   # (filled with 0 for df computation)
+  #   etapar.all <- rep(0, unlist(likpar[2, pos]))  #etapar full model (filled with 0 for df computation)
+  #   likpar <- likpar[, -pos]
+  #   Xlist.n <- Xlist.n[-pos]
+  # } else {
+  #   loglik.all <- object$loglik
+  #   etapar.all <- object$etapar
+  # }
+  #
+  # loglikg <- sum(unlist(likpar[1, ]))  #sum of likelihood value for subgroups
+  # LR <- 2 * (abs(loglikg - loglik.all))  #LR value
+  # df = sum(unlist(likpar[2, ])) - (length(etapar.all))  #final degrees of freedom
+  # pvalue <- 1 - pchisq(LR, df)  #pvalue
+  #
+  # betalist <- likpar[3, ]  #organizing betalist
 
-  ## extract fitted splitgroup models # rh 02-05-2010 begin MjM
-  ## 2012-03-18
-  if (ifelse(length(splitcr) == 1, splitcr != "all.r", TRUE)) {
-    fitobj <- likpar[6, 1:length(unique(rvind))]
-  } else {
-    fitobj <- likpar[6, 1:length(unique(rvind[excl_0_k]))]
-  }  ### end MjM 2012-03-18
-  likpar <- likpar[-6, ]
-
-  if ((length(del.pos) > 0) | ifelse(length(splitcr) == 1,
-                                     splitcr == "all.r", FALSE)) {
-    # re-estimate full model ### MjM 2012-03-18
-    pos <- length(Xlist.n)  #position of the full model
-    loglik.all <- likpar[1, pos][[1]]  #loglik full model
-    # etapar.all <- rep(0,likpar[2,pos]) #etapar full model
-    # (filled with 0 for df computation)
-    etapar.all <- rep(0, unlist(likpar[2, pos]))  #etapar full model (filled with 0 for df computation)
-    likpar <- likpar[, -pos]
-    Xlist.n <- Xlist.n[-pos]
-  } else {
-    loglik.all <- object$loglik
-    etapar.all <- object$etapar
-  }
-
-  loglikg <- sum(unlist(likpar[1, ]))  #sum of likelihood value for subgroups
-  LR <- 2 * (abs(loglikg - loglik.all))  #LR value
-  df = sum(unlist(likpar[2, ])) - (length(etapar.all))  #final degrees of freedom
-  pvalue <- 1 - pchisq(LR, df)  #pvalue
-
-  betalist <- likpar[3, ]  #organizing betalist
-
-
-  result <- list(X=X.original, X.list=Xlist.n, model=object$model,LR=LR,
-                 df=df, pvalue=pvalue, likgroup=unlist(likpar[1,],use.names=FALSE),
-                 betalist=betalist, etalist=likpar[4,],selist=likpar[5,], spl.gr=spl.gr, call=call, fitobj=fitobj)  ## rh fitobj added
-  class(result) <- "LR"
+  # AK 24.04.2021 X.el added
+  # result <- list(X=X.original, X.el=X.el, X.list=Xlist.n, model=object$model,LR=LR,
+  #                df=df, pvalue=pvalue, likgroup=unlist(likpar[1,],use.names=FALSE),
+  #                betalist=betalist, etalist=likpar[4,],selist=likpar[5,], spl.gr=spl.gr, call=call, fitobj=fitobj)  ## rh fitobj added
+  # class(result) <- "LR"
+  result <- list(X=X.original, X.el=X.el, X.list=Xlist.n, model=object$model, call=call)
 
   return(result)
 

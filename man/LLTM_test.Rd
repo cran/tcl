@@ -7,30 +7,31 @@
 LLTM_test(X, W)
 }
 \arguments{
-\item{X}{data matrix.}
+\item{X}{Data matrix.}
 
-\item{W}{design matrix of LLTM.}
+\item{W}{Design matrix of LLTM.}
 }
 \value{
 A list of test statistics, degrees of freedom, and p-values.
- \item{test}{a numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
- \item{df}{degrees of freedom.}
- \item{pvalue}{a numeric vector of corresponding p-values.}
- \item{call}{the matched call.}
+ \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+ \item{df}{Degrees of freedom.}
+ \item{pvalue}{A numeric vector of corresponding p-values.}
+ \item{call}{The matched call.}
 }
 \description{
 Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics for
-  hypotheses defined by linear restrictions on item parameters of RM.
+  hypotheses defined by linear restrictions on parameter space of the item parameters of RM.
 }
 \details{
 The RM item parameters are assumed to be linear in the LLTM parameters.
- The coefficients of linear functions are specified by a design matrix W. In this context,
- the LLTM is considered as a more parsimonous model than the RM. The LLTM parameters can be
+ The coefficients of the linear functions are specified by a design matrix W. In this context,
+ the LLTM is considered as a more parsimonious model than the RM. The LLTM parameters can be
  interpreted as the difficulties of certain cognitive operations needed to respond correctly
  to psychological test items. The item parameters of the RM are assumed to be linear combinations
  of these cognitive operations. These linear combinations are defined in the design matrix W.
 }
 \examples{
+\dontrun{
 # Numerical example assuming no deviation from linear restriction
 
 # design matrix W defining linear restriction
@@ -50,6 +51,7 @@ res$test # test statistics
 res$df # degrees of freedoms
 res$pvalue # p-values
 
+}
 }
 \references{
 {

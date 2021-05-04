@@ -18,22 +18,22 @@
 #' Testing linear restrictions on parameter space of item parameters of RM.
 #'
 #' Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics for
-#'   hypotheses defined by linear restrictions on item parameters of RM.
+#'   hypotheses defined by linear restrictions on parameter space of the item parameters of RM.
 #'
-#'The RM item parameters are assumed to be linear in the LLTM parameters.
-#'  The coefficients of linear functions are specified by a design matrix W. In this context,
-#'  the LLTM is considered as a more parsimonous model than the RM. The LLTM parameters can be
+#' The RM item parameters are assumed to be linear in the LLTM parameters.
+#'  The coefficients of the linear functions are specified by a design matrix W. In this context,
+#'  the LLTM is considered as a more parsimonious model than the RM. The LLTM parameters can be
 #'  interpreted as the difficulties of certain cognitive operations needed to respond correctly
 #'  to psychological test items. The item parameters of the RM are assumed to be linear combinations
 #'  of these cognitive operations. These linear combinations are defined in the design matrix W.
 #'
-#' @param X data matrix.
-#' @param W design matrix of LLTM.
+#' @param X Data matrix.
+#' @param W Design matrix of LLTM.
 #' @return A list of test statistics, degrees of freedom, and p-values.
-#'  \item{test}{a numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
-#'  \item{df}{degrees of freedom.}
-#'  \item{pvalue}{a numeric vector of corresponding p-values.}
-#'  \item{call}{the matched call.}
+#'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+#'  \item{df}{Degrees of freedom.}
+#'  \item{pvalue}{A numeric vector of corresponding p-values.}
+#'  \item{call}{The matched call.}
 #' @references{
 #'  Fischer, G. H. (1995). The Linear Logistic Test Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 #'  Rasch models: Foundations, Recent Developments, and Applications (pp. 131-155). New York: Springer.
@@ -44,6 +44,7 @@
 #' @export
 #' @seealso \code{\link{change_test}}, and \code{\link{invar_test}}.
 #' @examples
+#' \dontrun{
 #' # Numerical example assuming no deviation from linear restriction
 #'
 #' # design matrix W defining linear restriction
@@ -63,7 +64,7 @@
 #' res$df # degrees of freedoms
 #' res$pvalue # p-values
 #'
-# #' @importFrom eRm RM LLTM
+#'}
 
 LLTM_test <- function(X, W) {
   # X = observed data matrix

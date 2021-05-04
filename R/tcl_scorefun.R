@@ -12,11 +12,11 @@
 # using function eRm_cml
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 06/09/2019
+# copyright (c) 2019, Last Modified 01/05/2021
 ######################################################################
-#' Computation of score funtion.
+#' Computation of score function.
 #'
-#' Uses function jacobian() from numDeriv package to compute (approximate numerically) score function
+#' Uses function \code{jacobian()} from numDeriv package to compute (approximate numerically) score function
 #'   (first order partial derivatives of conditional log likelihood function)
 #'   evaluated at arbitrary values of item easiness parameters.
 #'
@@ -33,10 +33,12 @@
 #' @keywords htest
 #' @export
 #' @examples
+#' \dontrun{
 #' # Rasch model with beta_1 restricted to 0
 #' y <- eRm::raschdat1
 #' res <- eRm::RM(X = y, sum0 = FALSE)
 #' scorefun <- tcl_scorefun(X = y, eta = res$etapar, model = "RM")
+#' }
 
 tcl_scorefun<-function(X, eta, W, model = "RM") {
 # X = observed data matrix

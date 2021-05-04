@@ -25,17 +25,17 @@
 #'   The data matrix X has n rows (number of persons) and 2k columns considered as virtual items.
 #'   Assume a constant shift of item difficulties of each item between the 2 time points represented
 #'   by one parameter. The shift parameter is the only parameter of interest.
-#'   Test of hypothesis that shift parameter equals zero against the two-sided alternative that shift parameter
-#'   is not equal to zero.
+#'   Of interest is the test of the hypothesis that the shift parameter equals 0 against the two-sided
+#'   alternative that it is not equal to zero.
 #'
-#' @param X data matrix containing the responses of n persons to 2k binary items.
+#' @param X Data matrix containing the responses of n persons to 2k binary items.
 #'   Columns 1 to k contain the responses to k items at time point 1,
 #'   and columns (k+1) to 2k the responses to the same k items at time point 2.
 #' @return A list of test statistics, degrees of freedom, and p-values.
-#'  \item{test}{a numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
-#'  \item{df}{degrees of freedom.}
-#'  \item{pvalue}{a numeric vector of corresponding p-values.}
-#'  \item{call}{the matched call.}
+#'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+#'  \item{df}{Degrees of freedom.}
+#'  \item{pvalue}{A numeric vector of corresponding p-values.}
+#'  \item{call}{The matched call.}
 #' @references{
 #'  Fischer, G. H. (1995). The Linear Logistic Test Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 #'  Rasch models: Foundations, Recent Developments, and Applications (pp. 131-155). New York: Springer.
@@ -46,13 +46,14 @@
 #' @export
 #' @seealso \code{\link{invar_test}}, and \code{\link{LLTM_test}}.
 #' @examples
+#' \dontrun{
 #' # Numerical example with 400 persons and 4 items
 #' # presented twice, thus 8 virtual items
 #'
 #' # Data y generated under the assumption that shift parameter equals 0
 #' # (no change from time point 1 to 2)
 #'
-#' # design matrix W used only for exmaple data generation
+#' # design matrix W used only for example data generation
 #' #     (not used for estimating in change_test function)
 #' W <- rbind(c(1,0,0,0,0),
 #'   c(0,1,0,0,0),
@@ -63,9 +64,8 @@
 #'   c(0,0,1,0,1),
 #'   c(0,0,0,1,1))
 #'
-#' # eta Parameter, first 4 are nuisance
-#' # (easiness parameters of the 4 items at time point 1),
-#' # last one is the shift parameter
+#' # eta Parameter, first 4 are nuisance, i.e. , easiness parameters of the 4 items
+#' # at time point 1, last one is the shift parameter.
 #' eta <- c(-2,-1,1,2,0)
 #'
 #' y <- eRm::sim.rasch(persons = rnorm(400), items = colSums(eta * t(W)))
@@ -76,7 +76,7 @@
 #' res$df # degrees of freedoms
 #' res$pvalue # p-values
 #'
-# #' #' @importFrom eRm LLTM sim.rasch
+#'}
 
 change_test <- function(X) {
 

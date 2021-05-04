@@ -23,10 +23,13 @@ Uses function \code{hessian()} from numDeriv package to compute (approximate num
   evaluated at arbitrary values of item easiness parameters.
 }
 \examples{
+\dontrun{
 # Rasch model with beta_1 restricted to 0
 y <- eRm::raschdat1
 res <- eRm::RM(X = y, sum0 = FALSE)
 mat <- tcl_hessian(X = y, eta = res$etapar, model = "RM")
+
+}
 }
 \references{
 {

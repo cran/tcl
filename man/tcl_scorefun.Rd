@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcl_scorefun.R
 \name{tcl_scorefun}
 \alias{tcl_scorefun}
-\title{Computation of score funtion.}
+\title{Computation of score function.}
 \usage{
 tcl_scorefun(X, eta, W, model = "RM")
 }
@@ -19,15 +19,17 @@ tcl_scorefun(X, eta, W, model = "RM")
 Score function evaluated at eta
 }
 \description{
-Uses function jacobian() from numDeriv package to compute (approximate numerically) score function
+Uses function \code{jacobian()} from numDeriv package to compute (approximate numerically) score function
   (first order partial derivatives of conditional log likelihood function)
   evaluated at arbitrary values of item easiness parameters.
 }
 \examples{
+\dontrun{
 # Rasch model with beta_1 restricted to 0
 y <- eRm::raschdat1
 res <- eRm::RM(X = y, sum0 = FALSE)
 scorefun <- tcl_scorefun(X = y, eta = res$etapar, model = "RM")
+}
 }
 \references{
 {

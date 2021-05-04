@@ -12,7 +12,7 @@
 # score funtion and Hessian matrix.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 15/08/2019
+# copyright (c) 2021, Last Modified 30/01/2021
 ######################################################################
 #' @importFrom numDeriv hessian jacobian
 
