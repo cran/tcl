@@ -15,7 +15,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 21/04/2021
+# copyright (c) 2021, Last Modified 25/10/2021
 ######################################################################
 #' Sample size planning for tests of invariance of item parameters between two groups of persons in binary Rasch model
 #'
@@ -257,4 +257,5 @@ sa_sizeRM <- function(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
                     'total sample size in group 1' = unlist(do.call(cbind, res)[4,]),
                     'total sample size in group 2' = unlist(do.call(cbind, res)[5,]),
                     "call" = call)
+  return(results)
 }

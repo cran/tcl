@@ -15,7 +15,7 @@ LLTM_test(X, W)
 A list of test statistics, degrees of freedom, and p-values.
  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
  \item{df}{Degrees of freedom.}
- \item{pvalue}{A numeric vector of corresponding p-values.}
+ \item{pvalue}{A vector of corresponding p-values.}
  \item{call}{The matched call.}
 }
 \description{

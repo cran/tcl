@@ -4,7 +4,7 @@
 #        Institute of Psychology
 #        Statistics and Psychometrics Working Group
 #
-# tcl_splitcr
+# tcl_splitcr_RStest
 #
 # Part of R/tlc - Testing in Conditional Likelihood Context package
 #
@@ -13,17 +13,14 @@
 # original URL: https://github.com/cran/eRm/blob/master/R/LRtest.Rm.R
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 22/04/2021
+# copyright (c) 2021, Last Modified 24/01/2022
 ######################################################################
 
-tcl_splitcr <- function(X, splitcr = "median", model ="RM") {
+tcl_splitcr_RStest <- function(X, splitcr = "median", model ="RM") {
   # splitcr... splitting criterion for LR-groups. "all.r" corresponds to a complete
   #            raw score split (r=1,...,k-1), "median" to a median raw score split,
   #            "mean" corresponds to the mean raw score split.
   #            optionally also a vector of length n for group split can be submitted.
-
-  oldw <- getOption("warn") # addded AK 20-02-2022
-  options(warn = -1)
 
   call <- match.call()
 
@@ -152,46 +149,44 @@ tcl_splitcr <- function(X, splitcr = "median", model ="RM") {
 
   }
 
+  ## code block commented out AK 24-01-2022
   #----------item to be deleted---------------
-  del.pos.l <- lapply(Xlist, function(x) {
-    it.sub <- datcheck.LRtest(x, object$X, object$model)  #items to be removed within subgroup
-  })
-
-  del.pos <- unique(unlist(del.pos.l))
-  if (length(del.pos) >= (ncol(object$X) - 1)) {
-    stop("\nNo items with appropriate response patterns left to perform LR-test!\n")
-  }
-
-  if (length(del.pos) > 0)
-  {
-    ### begin MjM 2013-01-27
-    warning(paste0("\n", prettyPaste("The following items were excluded for the computation of GR,LR, and W due to inappropriate response patterns within subgroups:"),
-                   # prettyPaste("The following items were excluded due to inappropriate response patterns within subgroups:"),
-                   "\n", paste(colnames(object$X)[del.pos], collapse = " "),
-                   "\n\n"
-                   # prettyPaste("Full and subgroup models are estimated without these items!")
-                   ),
-            call. = FALSE, immediate. = TRUE)
-  }  ### end MjM 2013-01-27
-
-
-  if (length(del.pos) > 0) {
-    X.el <- object$X[, -(del.pos)]
-  } else {
-    X.el <- object$X
-  }
-
-  if (ifelse(length(splitcr) == 1, splitcr != "all.r", TRUE)) {
-    ### begin MjM 2012-03-18 # for all cases except 'all.r'
-    Xlist.n <- by(X.el, rvind, function(y) y)
-    names(Xlist.n) <- names(Xlist)
-    if (length(del.pos) > 0)
-      Xlist.n <- c(Xlist.n, list(X.el))  # X.el added since we must refit whole group without del.pos items
-  } else {
-    Xlist.n <- by(X.el[excl_0_k, ], rvind[excl_0_k], function(y) y)
-    names(Xlist.n) <- names(Xlist)
-    Xlist.n <- c(Xlist.n, list(X.el[excl_0_k, ]))  # X.el added since we must refit whole group without del.pos items
-  }  ### end MjM 2012-03-18
+  # del.pos.l <- lapply(Xlist, function(x) {
+  #   it.sub <- datcheck.LRtest(x, object$X, object$model)  #items to be removed within subgroup
+  # })
+  #
+  # del.pos <- unique(unlist(del.pos.l))
+  # if (length(del.pos) >= (ncol(object$X) - 1)) {
+  #   stop("\nNo items with appropriate response patterns left to perform LR-test!\n")
+  # }
+  #
+  # if (length(del.pos) > 0)
+  # {
+  #   ### begin MjM 2013-01-27
+  #   warning(paste0("\n", prettyPaste("The following items were excluded due to inappropriate response patterns within subgroups:"),
+  #                  "\n", paste(colnames(object$X)[del.pos], collapse = " "),
+  #                  "\n\n", prettyPaste("Full and subgroup models are estimated without these items!")),
+  #           call. = FALSE, immediate. = TRUE)
+  # }  ### end MjM 2013-01-27
+  #
+  #
+  # if (length(del.pos) > 0) {
+  #   X.el <- object$X[, -(del.pos)]
+  # } else {
+  #   X.el <- object$X
+  # }
+  #
+  # if (ifelse(length(splitcr) == 1, splitcr != "all.r", TRUE)) {
+  #   ### begin MjM 2012-03-18 # for all cases except 'all.r'
+  #   Xlist.n <- by(X.el, rvind, function(y) y)
+  #   names(Xlist.n) <- names(Xlist)
+  #   if (length(del.pos) > 0)
+  #     Xlist.n <- c(Xlist.n, list(X.el))  # X.el added since we must refit whole group without del.pos items
+  # } else {
+  #   Xlist.n <- by(X.el[excl_0_k, ], rvind[excl_0_k], function(y) y)
+  #   names(Xlist.n) <- names(Xlist)
+  #   Xlist.n <- c(Xlist.n, list(X.el[excl_0_k, ]))  # X.el added since we must refit whole group without del.pos items
+  # }  ### end MjM 2012-03-18
 
   ## code block commented out AK 24-04-2021
   # if (object$model == "RM") {
@@ -271,8 +266,8 @@ tcl_splitcr <- function(X, splitcr = "median", model ="RM") {
   #                df=df, pvalue=pvalue, likgroup=unlist(likpar[1,],use.names=FALSE),
   #                betalist=betalist, etalist=likpar[4,],selist=likpar[5,], spl.gr=spl.gr, call=call, fitobj=fitobj)  ## rh fitobj added
   # class(result) <- "LR"
-  if(rlang::is_empty(del.pos)) del.pos<-NA # addded AK 20-02-022
-  result <- list(X=X.original, X.el=X.el, X.list=Xlist.n, model=object$model, del_pos=del.pos, call=call)
+  # result <- list(X=X.original, X.el=X.el, X.list=Xlist.n, model=object$model, call=call) # AK 24.01.2022
+  result <- list(X=X.original, X_list=Xlist, model=object$model,call=call)
 
   return(result)
 

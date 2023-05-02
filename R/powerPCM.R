@@ -15,7 +15,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 20/04/2021
+# copyright (c) 2021, Last Modified 25/10/2021
 ######################################################################
 #' Power analysis of tests of invariance of item parameters between two groups
 #' of persons in partial credit model
@@ -276,4 +276,5 @@ powerPCM <- function(alpha = 0.05, n_total, persons1 = rnorm(10^6), persons2 = r
                     'degrees of freedom' = df,
                     'noncentrality parameter' = unlist(do.call(cbind, res)[4,]),
                     "call" = call)
+  return(results)
 }

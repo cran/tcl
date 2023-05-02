@@ -13,7 +13,7 @@
 # for hypothisized linear restriction of item parameter space in Rasch model
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 09/09/2019
+# copyright (c) 2019, Last Modified 02/05/2023
 ######################################################################
 #' Testing linear restrictions on parameter space of item parameters of RM.
 #'
@@ -32,7 +32,7 @@
 #' @return A list of test statistics, degrees of freedom, and p-values.
 #'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
 #'  \item{df}{Degrees of freedom.}
-#'  \item{pvalue}{A numeric vector of corresponding p-values.}
+#'  \item{pvalue}{A vector of corresponding p-values.}
 #'  \item{call}{The matched call.}
 #' @references{
 #'  Fischer, G. H. (1995). The Linear Logistic Test Model. In G. H. Fischer & I. W. Molenaar (Eds.),
@@ -122,9 +122,11 @@ LLTM_test <- function(X, W) {
   df <- length(r.RM$etapar) - length(r.LLTM$etapar)
   pvalue <- 1 - (sapply(test.stats, stats::pchisq, df = df))
 
+  pvalue <- pvalr(pvalue, digits = 3) # added 02.05.2023 AK
+
   res.list <- list("test" = round(test.stats, digits = 3),
                    "df" = df,
-                   "pvalue" = round(pvalue, digits = 3),
+                   "pvalue" = pvalue,
                    "call" = call)
 
   return(res.list)

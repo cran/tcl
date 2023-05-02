@@ -2,6 +2,7 @@
 
 export(LLTM_test)
 export(change_test)
+export(discr_test)
 export(invar_test)
 export(post_hocChange)
 export(post_hocPCM)

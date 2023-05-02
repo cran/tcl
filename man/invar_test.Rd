@@ -21,14 +21,22 @@ invar_test(X, splitcr = "median", model = "RM")
 \value{
 A list of test statistics, degrees of freedom, and p-values.
  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
- \item{df}{Degrees of freedom.}
- \item{pvalue}{A numeric vector of corresponding p-values.}
+ \item{df}{A numeric vector of corresponding degrees of freedom.}
+ \item{pvalue}{A vector of corresponding p-values.}
+ \item{deleted_items}{A list with numeric vectors of item numbers that were excluded before computing corresponding test statistics.}
  \item{call}{The matched call.}
 }
 \description{
 Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics
   for hypothesis of equality of item parameters between two groups of persons against a two-sided
  alternative that at least one item parameter differs between the two groups.
+}
+\details{
+Note that items are excluded for the computation of GR,LR, and W due to inappropriate
+ response patterns within subgroups and for computation of RS due to inappropriate
+ response patterns in the total data. If the model is identified from the total data but not from one
+ or both subgroups only RS will be computed. If the model is not identified from the total data,
+ no test statistic is computable.
 }
 \examples{
 \dontrun{
@@ -41,6 +49,36 @@ res <- invar_test(y, splitcr = x, model = "RM")
 res$test # test statistics
 res$df # degrees of freedoms
 res$pvalue # p-values
+res$deleted_items # excluded items
+
+$test
+  GR    LR    RS     W
+14.492 14.083 13.678 12.972
+
+$df
+GR LR RS  W
+7  7  7  7
+
+$pvalue
+  GR    LR    RS     W
+"0.043" "0.050" "0.057" "0.073"
+
+$deleted_items
+ $deleted_items$GR
+ [1] "none"
+
+ $deleted_items$LR
+ [1] "none"
+
+ $deleted_items$RS
+ [1] "none"
+
+ $deleted_items$W
+ [1] "none"
+
+
+$call
+invar_test(X = y, splitcr = x, model = "RM")
 
 }
 }

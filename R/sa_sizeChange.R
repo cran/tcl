@@ -15,7 +15,7 @@
 # deviation from the hypothesis to be tested
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 20/04/2021
+# copyright (c) 2021, Last Modified 25/10/2021
 ######################################################################
 #' Sample size planning for tests in context of measurement of change using LLTM
 #'
@@ -222,4 +222,5 @@ sa_sizeChange <- function(alpha = 0.05, beta = 0.05, eta, persons = rnorm(10^6))
                     'noncentrality parameter' = round(lambda0, digits = 3),
                     'total sample size' = unlist(do.call(cbind, res)[3,]),
                     "call" = call)
+  return(results)
 }
