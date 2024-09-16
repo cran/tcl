@@ -4,16 +4,16 @@
 \alias{powerChange}
 \title{Power analysis of tests in context of measurement of change using LLTM}
 \usage{
-powerChange(alpha = 0.05, n_total, eta, persons = rnorm(10^6))
+powerChange(n_total, eta, alpha = 0.05, persons = rnorm(10^6))
 }
 \arguments{
-\item{alpha}{Probability of the error of first kind.}
-
 \item{n_total}{Total sample size for which power shall be determined.}
 
 \item{eta}{A vector of eta parameters of the LLTM. The last element represents the constant change or shift for all items
 between time points 1 and 2. The other elements of the vector are the item parameters at time point 1. A choice of the eta
 parameters constitutes a scenario of deviation from the hypothesis of no change.}
+
+\item{alpha}{Probability of the error of first kind.}
 
 \item{persons}{A vector of person parameters (drawn from a specified distribution). By default \eqn{10^6} parameters are drawn at
 random from the standard normal distribution. The larger this number the more accurate are the computations. See Details.}
@@ -111,7 +111,7 @@ error of the suggested Monte Carlo computation procedure. It is called Monte Car
 # (easiness parameters of the 4 items at time point 1),
 # last one is the shift parameter
 eta <- c(-2,-1,1,2,0.5)
-res <- powerChange(alpha = 0.05, n_total=150, eta=eta, persons=rnorm(10^6))
+res <- powerChange(n_total = 150, eta = eta, persons=rnorm(10^6))
 
 # > res
 # $power

@@ -15,7 +15,7 @@
 # the hypothesis to be tested
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 19/04/2021
+# copyright (c) 2021, Last Modified 2/09/2024
 ######################################################################
 #' Power analysis of tests in context of measurement of change using LLTM
 #'
@@ -90,11 +90,11 @@
 #'numerically and evaluated at \eqn{e} using the package numDeriv. The square root of \eqn{Var(P)} is then used to quantify the random
 #'error of the suggested Monte Carlo computation procedure. It is called Monte Carlo error of power.
 #'
-#' @param alpha Probability of the error of first kind.
 #' @param n_total Total sample size for which power shall be determined.
 #' @param eta A vector of eta parameters of the LLTM. The last element represents the constant change or shift for all items
 #' between time points 1 and 2. The other elements of the vector are the item parameters at time point 1. A choice of the eta
 #' parameters constitutes a scenario of deviation from the hypothesis of no change.
+#' @param alpha Probability of the error of first kind.
 #' @param persons A vector of person parameters (drawn from a specified distribution). By default \eqn{10^6} parameters are drawn at
 #' random from the standard normal distribution. The larger this number the more accurate are the computations. See Details.
 #'
@@ -130,7 +130,7 @@
 #'# (easiness parameters of the 4 items at time point 1),
 #'# last one is the shift parameter
 #' eta <- c(-2,-1,1,2,0.5)
-#' res <- powerChange(alpha = 0.05, n_total=150, eta=eta, persons=rnorm(10^6))
+#' res <- powerChange(n_total = 150, eta = eta, persons=rnorm(10^6))
 #'
 #'# > res
 #'# $power
@@ -163,12 +163,15 @@
 
 
 
-powerChange <- function(alpha = 0.05, n_total, eta, persons = rnorm(10^6)){
+powerChange <- function(n_total,
+                        eta,
+                        alpha = 0.05,
+                        persons = rnorm(10^6)) {
 
   subfunc <- function(stats) {
     e <- stats/sum(t)
     nc <- e * n_total * (sum(t) / nrow(y))
-    f <- function(nc){pchisq(qchisq(1-alpha, 1), 1, nc)}
+    f <- function(nc){pchisq(qchisq(1 - alpha, 1), 1, nc)}
     beta <- f(nc)
     se <- sqrt((2 + 4*stats) * (1/sum(t))^2 * (numDeriv::grad(f, nc) * n_total * (sum(t) / nrow(y)))^2)
     power <- 1 - beta
@@ -177,19 +180,19 @@ powerChange <- function(alpha = 0.05, n_total, eta, persons = rnorm(10^6)){
                 'noncentrality parameter' = round(nc, digits = 3) ))
   }
 
-  call<-match.call()
+  call <- match.call()
 
   # design matrix W used only for data generation
   #    (not used for estimating in change_test() function)
   k <- length(eta) - 1
-  W <- cbind (rbind( diag(x=1, nrow = k, ncol = k), diag(x=1, nrow = k, ncol = k)),
+  W <- cbind(rbind( diag(x = 1, nrow = k, ncol = k), diag(x = 1, nrow = k, ncol = k)),
               c(rep(0,k), rep(1,k) ) )
 
-  y <- eRm::sim.rasch(persons=persons, items=colSums(-eta*t(W)))
+  y <- eRm::sim.rasch(persons = persons, items = colSums(-eta*t(W)))
 
-  t <- table(factor(rowSums(y),levels=1:(ncol(y)-1)))
+  t <- table(factor(rowSums(y),levels = 1:(ncol(y) - 1)))
 
-  est <- eRm::LLTM(X=y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
+  est <- eRm::LLTM(X = y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
   dev <- unname(est$etapar[ncol(y)/2])
 
   vstats <- change_test(X = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
@@ -199,7 +202,7 @@ powerChange <- function(alpha = 0.05, n_total, eta, persons = rnorm(10^6)){
   results <- list(  'power' = unlist(do.call(cbind, res)[1,]),
                     'MC error of power' = unlist(do.call(cbind, res)[2,]),
                     'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
-                    'person score distribution' = round(t/sum(t), digits=3),
+                    'person score distribution' = round(t/sum(t), digits = 3),
                     'degrees of freedom' = 1,
                     'noncentrality parameter' = unlist(do.call(cbind, res)[3,]),
                     "call" = call)

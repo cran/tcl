@@ -5,14 +5,14 @@
 \title{Power analysis of tests of invariance of item parameters between two groups of
 persons in partial credit model}
 \usage{
-post_hocPCM(alpha = 0.05, data, x)
+post_hocPCM(data, x, alpha = 0.05)
 }
 \arguments{
-\item{alpha}{Probability of error of first kind.}
-
 \item{data}{Data matrix with item responses (in ordered categories starting from 0).}
 
 \item{x}{A numeric vector of length equal to number of persons that contains zeros and ones indicating group membership of the persons.}
+
+\item{alpha}{Probability of error of first kind.}
 }
 \value{
 A list of results.
@@ -66,7 +66,7 @@ y <- eRm::pcmdat2
 n <- nrow(y) # sample size
 x <- c( rep(0,n/2), rep(1,n/2) ) # binary covariate
 
-res <- post_hocPCM(alpha = 0.05, data = y, x = x)
+res <- post_hocPCM(data = y, x = x, alpha = 0.05)
 
 # > res
 # $test

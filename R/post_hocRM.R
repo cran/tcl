@@ -12,7 +12,7 @@
 # given data and probability of error of first kind alpha
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 19/04/2021
+# copyright (c) 2021, Last Modified 2/9/2024
 ######################################################################
 #' Power analysis of tests of invariance of item parameters between two groups of persons in binary Rasch model
 #'
@@ -38,9 +38,9 @@
 #' where \eqn{F_{df, \lambda}} is the cumulative distribution function of the noncentral \eqn{\chi^2} distribution
 #' with \eqn{df} equal to the number of items reduced by 1 and \eqn{\lambda} equal to the observed value of the test statistic.
 #'
-#' @param alpha Probability of error of first kind.
 #' @param data Binary data matrix.
 #' @param x A numeric vector of length equal to number of persons containing zeros and ones indicating group membership of the persons.
+#' @param alpha Probability of error of first kind.
 #'
 #'@return A list of results.
 #'  \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
@@ -89,7 +89,7 @@
 #' n <- nrow(y) # sample size
 #' x <- c( rep(0,n/2), rep(1,n/2) ) # binary covariate
 #'
-#' res <-  post_hocRM(alpha = 0.05, data = y, x = x)
+#' res <-  post_hocRM(data = y, x = x, alpha = 0.05)
 #'
 #'# > res
 #'# $test
@@ -147,17 +147,17 @@
 
 
 
-post_hocRM <- function(alpha = 0.05, data, x){
+post_hocRM <- function(data, x, alpha = 0.05){
 
   subfunc <- function(stats) {
-    e <- stats/(sum(t1)+sum(t2))
+    e <- stats/(sum(t1) + sum(t2))
     nc <- stats
-    beta <- pchisq(qchisq(1-alpha, df), df, nc)
+    beta <- pchisq(qchisq(1 - alpha, df), df, nc)
     power <- 1 - beta
     return(list('power' = round(power, digits = 3),
                 'observed global deviation' = round(e, digits = 3)))
   }
-  call<-match.call()
+  call <- match.call()
 
   # Check for inappropriate response patterns within subgroups
   e <- tcl_splitcr(X = data, splitcr = x, model = "RM")
@@ -168,21 +168,21 @@ post_hocRM <- function(alpha = 0.05, data, x){
   r2 <- psychotools::raschmodel(y2)
   r3 <- psychotools::raschmodel(rbind(y1,y2))
 
-  df <- ncol(y1)-1
+  df <- ncol(y1) - 1
 
-  t1 <- table(factor(rowSums(y1),levels=1:(ncol(y1)-1)))
-  t2 <- table(factor(rowSums(y2),levels=1:(ncol(y2)-1)))
+  t1 <- table(factor(rowSums(y1),levels = 1:(ncol(y1) - 1)))
+  t2 <- table(factor(rowSums(y2),levels = 1:(ncol(y2) - 1)))
 
-  vstats <- do.call(c, invar_test_obj(r1=r1, r2=r2, r3=r3, model = "RM"))
+  vstats <- do.call(c, invar_test_obj(r1 = r1, r2 = r2, r3 = r3, model = "RM"))
 
   res <- lapply(vstats, subfunc)
 
   results <- list(  'test' = round(vstats, digits = 3),
                     'power' = unlist(do.call(cbind, res)[1,]),
                     'observed global deviation' = unlist(do.call(cbind, res)[2,]),
-                    'observed local deviation' = round( rbind("group1"=r1$coefficients, "group2"= r2$coefficients), digits = 3 ),
-                    'person score distribution in group 1' = round(t1/sum(t1), digits=3),
-                    'person score distribution in group 2' = round(t2/sum(t2), digits=3),
+                    'observed local deviation' = round( rbind("group1" = r1$coefficients, "group2" = r2$coefficients), digits = 3 ),
+                    'person score distribution in group 1' = round(t1/sum(t1), digits = 3),
+                    'person score distribution in group 2' = round(t2/sum(t2), digits = 3),
                     'degrees of freedom' = df,
                     'noncentrality parameter' = round(vstats, digits = 3),
                     "call" = call)

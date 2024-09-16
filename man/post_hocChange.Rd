@@ -4,12 +4,12 @@
 \alias{post_hocChange}
 \title{Power analysis of tests in context of measurement of change using LLTM}
 \usage{
-post_hocChange(alpha = 0.05, data)
+post_hocChange(data, alpha = 0.05)
 }
 \arguments{
-\item{alpha}{Probability of error of first kind.}
-
 \item{data}{Data matrix as required for function \code{\link{change_test}}.}
+
+\item{alpha}{Probability of error of first kind.}
 }
 \value{
 A list of results.
@@ -67,7 +67,7 @@ eta <- c(-2,-1,1,2,0.5)
 
 y <- eRm::sim.rasch(persons=rnorm(150), items=colSums(-eta*t(W)))
 
-res <- post_hocChange(alpha = 0.05, data = y)
+res <- post_hocChange(data = y, alpha = 0.05)
 
 # > res
 # $test

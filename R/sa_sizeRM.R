@@ -15,7 +15,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 25/10/2021
+# copyright (c) 2021, Last Modified 2/9/2024
 ######################################################################
 #' Sample size planning for tests of invariance of item parameters between two groups of persons in binary Rasch model
 #'
@@ -109,6 +109,8 @@
 #'\eqn{Var(N_{inf})} is then used to quantify the random error of the suggested Monte Carlo
 #'computation procedure. It is called Monte Carlo error of informative sample size.
 #'
+#' @param local_dev A list consisting of two vectors containing item parameters for the two person groups
+#' representing a deviation from the hypothesis to be tested locally per item.
 #' @param alpha Probability of the error of first kind.
 #' @param beta Probability of the error of second kind.
 #' @param persons1 A vector of person parameters for group 1 (drawn from a specified distribution). By default
@@ -117,8 +119,6 @@
 #' @param persons2 A vector of person parameters for group 2 (drawn from a specified distribution). By default
 #' \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger this
 #' number the more accurate are the computations. See Details.
-#' @param local_dev A list consisting of two vectors containing item parameters for the two person groups
-#' representing a deviation from the hypothesis to be tested locally per item.
 #'
 #'@return A list of results.
 #'  \item{informative sample size}{Informative sample size for each test omitting persons with min. and max score.}
@@ -210,11 +210,14 @@
 #'#                            c(0, 0.5, 0, -0.5, 1)))
 #' }
 
-sa_sizeRM <- function(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
-                      persons2 = rnorm(10^6), local_dev){
+sa_sizeRM <- function(local_dev,
+                      alpha = 0.05,
+                      beta = 0.05,
+                      persons1 = rnorm(10^6),
+                      persons2 = rnorm(10^6)) {
 
   subfunc <- function(stats) {
-    e <- stats /(sum(t1)+sum(t2))
+    e <- stats / (sum(t1) + sum(t2))
     n <- ceiling(lambda0 / e)
     se <- sqrt((2*df + 4*stats) * lambda0^2 * (sum(t1) + sum(t2))^2 * (stats)^-4)
     n1 <- ceiling((n/2)/(sum(t1)/nrow(y1)))
@@ -225,13 +228,13 @@ sa_sizeRM <- function(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
                 'total sample size in group 1' = n1,
                 'total sample size in group 2' = n2 ))
   }
-  call<-match.call()
+  call <- match.call()
 
   y1 <- eRm::sim.rasch(persons = persons1, items = local_dev[[1]])
   y2 <- eRm::sim.rasch(persons = persons2, items = local_dev[[2]])
 
-  func <- function (x) {beta - pchisq(qchisq(1-alpha,ncol(y1)-1), ncol(y1)-1, ncp = x)}
-  lambda0 <- uniroot(f = func, interval = c(0,10^3), tol=.Machine$double.eps^0.5)$root
+  func <- function(x) {beta - pchisq(qchisq(1 - alpha, ncol(y1) - 1), ncol(y1) - 1, ncp = x)}
+  lambda0 <- uniroot(f = func, interval = c(0,10^3), tol = .Machine$double.eps^0.5)$root
 
   r1 <- psychotools::raschmodel(y1)
   r2 <- psychotools::raschmodel(y2)
@@ -239,19 +242,19 @@ sa_sizeRM <- function(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
 
   df <- ncol(y1) - 1
 
-  t1 <- table(factor(rowSums(y1),levels=1:(ncol(y1)-1)))
-  t2 <- table(factor(rowSums(y2),levels=1:(ncol(y2)-1)))
+  t1 <- table(factor(rowSums(y1),levels = 1:(ncol(y1) - 1)))
+  t2 <- table(factor(rowSums(y2),levels = 1:(ncol(y2) - 1)))
 
-  vstats <- do.call(c, invar_test_obj(r1=r1, r2=r2, r3=r3, model = "RM"))
+  vstats <- do.call(c, invar_test_obj(r1 = r1, r2 = r2, r3 = r3, model = "RM"))
 
   res <- lapply(vstats, subfunc)
 
   results <- list(  'informative sample size' = unlist(do.call(cbind, res)[1,]),
                     'MC error of sample size' = unlist(do.call(cbind, res)[2,]),
                     'global deviation' = unlist(do.call(cbind, res)[3,]),
-                    'local deviation' = round(rbind("group1"=r1$coefficients, "group2"= r2$coefficients), digits = 3),
-                    'person score distribution in group 1' = round(t1/sum(t1), digits=3),
-                    'person score distribution in group 2' = round(t2/sum(t2), digits=3),
+                    'local deviation' = round(rbind("group1" = r1$coefficients, "group2" = r2$coefficients), digits = 3),
+                    'person score distribution in group 1' = round(t1/sum(t1), digits = 3),
+                    'person score distribution in group 2' = round(t2/sum(t2), digits = 3),
                     'degrees of freedom' = df,
                     'noncentrality parameter' = round(lambda0, digits = 3),
                     'total sample size in group 1' = unlist(do.call(cbind, res)[4,]),

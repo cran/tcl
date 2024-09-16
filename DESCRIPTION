@@ -1,8 +1,8 @@
 Package: tcl
 Type: Package
 Title: Testing in Conditional Likelihood Context
-Version: 0.2.0
-Date: 2023-05-02
+Version: 0.2.1
+Date: 2024-09-16
 Authors@R: 
     c(person(given = "Clemens",
               family = "Draxler",
@@ -39,8 +39,8 @@ Suggests: knitr, rmarkdown
 Encoding: UTF-8
 LazyLoad: true
 NeedsCompilation: no
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
-Packaged: 2023-05-02 12:38:48 UTC; pandabook
+Packaged: 2024-09-16 10:39:08 UTC; pandabook
 Repository: CRAN
-Date/Publication: 2023-05-02 22:50:02 UTC
+Date/Publication: 2024-09-16 11:20:02 UTC

@@ -32,7 +32,7 @@ Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test 
  alternative that at least one item parameter differs between the two groups.
 }
 \details{
-Note that items are excluded for the computation of GR,LR, and W due to inappropriate
+Note that items are excluded for the computation of GR, LR, and W due to inappropriate
  response patterns within subgroups and for computation of RS due to inappropriate
  response patterns in the total data. If the model is identified from the total data but not from one
  or both subgroups only RS will be computed. If the model is not identified from the total data,

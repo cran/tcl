@@ -5,14 +5,17 @@
 \title{Sample size planning for tests of invariance of item parameters between two groups of persons in binary Rasch model}
 \usage{
 sa_sizeRM(
+  local_dev,
   alpha = 0.05,
   beta = 0.05,
   persons1 = rnorm(10^6),
-  persons2 = rnorm(10^6),
-  local_dev
+  persons2 = rnorm(10^6)
 )
 }
 \arguments{
+\item{local_dev}{A list consisting of two vectors containing item parameters for the two person groups
+representing a deviation from the hypothesis to be tested locally per item.}
+
 \item{alpha}{Probability of the error of first kind.}
 
 \item{beta}{Probability of the error of second kind.}
@@ -24,9 +27,6 @@ number the more accurate are the computations. See Details.}
 \item{persons2}{A vector of person parameters for group 2 (drawn from a specified distribution). By default
 \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger this
 number the more accurate are the computations. See Details.}
-
-\item{local_dev}{A list consisting of two vectors containing item parameters for the two person groups
-representing a deviation from the hypothesis to be tested locally per item.}
 }
 \value{
 A list of results.

@@ -14,7 +14,7 @@
 # probability of error of first kind alpha
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 19/04/2021
+# copyright (c) 2021, Last Modified 2/09/2024
 ######################################################################
 #' Power analysis of tests in context of measurement of change using LLTM
 #'
@@ -41,8 +41,8 @@
 #'\eqn{df = 1} and \eqn{\lambda} equal to the observed value of the test statistic.
 #'
 #'
-#' @param alpha Probability of error of first kind.
 #' @param data Data matrix as required for function \code{\link{change_test}}.
+#' @param alpha Probability of error of first kind.
 #'
 #'@return A list of results.
 #' \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR)  test statistics.}
@@ -88,7 +88,7 @@
 #'
 #' y <- eRm::sim.rasch(persons=rnorm(150), items=colSums(-eta*t(W)))
 #'
-#' res <- post_hocChange(alpha = 0.05, data = y)
+#' res <- post_hocChange(data = y, alpha = 0.05)
 #'
 #'# > res
 #'# $test
@@ -121,20 +121,20 @@
 
 
 
-post_hocChange <- function(alpha = 0.05, data){
+post_hocChange <- function(data, alpha = 0.05){
 
   subfunc <- function(stats) {
     nc <- stats
-    beta <- pchisq(qchisq(1-alpha, 1), 1, nc)
+    beta <- pchisq(qchisq(1 - alpha, 1), 1, nc)
     power <- 1 - beta
     return(round(power, digits = 3))
   }
 
-  call<-match.call()
+  call <- match.call()
 
-  t <- table(factor(rowSums(data),levels=1:(ncol(data)-1)))
+  t <- table(factor(rowSums(data),levels = 1:(ncol(data) - 1)))
 
-  est <- eRm::LLTM(X=data, mpoints = 2,se = TRUE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
+  est <- eRm::LLTM(X = data, mpoints = 2,se = TRUE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
   dev_obs <- unname(est$etapar[ncol(data)/2])
 
   vstats <- change_test(X = data)$test[c(4,2,3,1)] # W, LR, RS, GR test

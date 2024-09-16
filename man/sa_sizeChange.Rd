@@ -4,16 +4,16 @@
 \alias{sa_sizeChange}
 \title{Sample size planning for tests in context of measurement of change using LLTM}
 \usage{
-sa_sizeChange(alpha = 0.05, beta = 0.05, eta, persons = rnorm(10^6))
+sa_sizeChange(eta, alpha = 0.05, beta = 0.05, persons = rnorm(10^6))
 }
 \arguments{
-\item{alpha}{Probability of error of first kind.}
-
-\item{beta}{Probability of error of second kind.}
-
 \item{eta}{A vector of eta parameters of the LLTM. The last element represents the constant change or shift for all items
 between time points 1 and 2. The other elements of the vector are the item parameters at time point 1. A choice of the eta
 parameters constitutes a scenario of deviation from the hypothesis of no change.}
+
+\item{alpha}{Probability of error of first kind.}
+
+\item{beta}{Probability of error of second kind.}
 
 \item{persons}{A vector of person parameters (drawn from a specified distribution). By default \eqn{10^6} parameters
 are drawn at random from the standard normal distribution. The larger this number the more accurate are the computations.
@@ -127,7 +127,7 @@ Monte Carlo error of informative sample size.
 # last one is the shift parameter
 eta <- c(-2,-1,1,2,0.5)
 
-res <- sa_sizeChange(alpha = 0.05, beta = 0.05, eta=eta, persons = rnorm(10^6))
+res <- sa_sizeChange(eta = eta)
 
 # > res
 # $`informative sample size`

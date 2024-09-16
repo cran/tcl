@@ -15,7 +15,7 @@
 # deviation from the hypothesis to be tested
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 25/10/2021
+# copyright (c) 2021, Last Modified 2/9/2024
 ######################################################################
 #' Sample size planning for tests in context of measurement of change using LLTM
 #'
@@ -102,11 +102,11 @@
 #'is then used to quantify the random error of the suggested Monte Carlo computation procedure. It is called
 #'Monte Carlo error of informative sample size.
 #'
-#' @param alpha Probability of error of first kind.
-#' @param beta Probability of error of second kind.
 #' @param eta A vector of eta parameters of the LLTM. The last element represents the constant change or shift for all items
 #' between time points 1 and 2. The other elements of the vector are the item parameters at time point 1. A choice of the eta
 #' parameters constitutes a scenario of deviation from the hypothesis of no change.
+#' @param alpha Probability of error of first kind.
+#' @param beta Probability of error of second kind.
 #' @param persons A vector of person parameters (drawn from a specified distribution). By default \eqn{10^6} parameters
 #' are drawn at random from the standard normal distribution. The larger this number the more accurate are the computations.
 #' See Details.
@@ -145,7 +145,7 @@
 #'# last one is the shift parameter
 #' eta <- c(-2,-1,1,2,0.5)
 #'
-#'res <- sa_sizeChange(alpha = 0.05, beta = 0.05, eta=eta, persons = rnorm(10^6))
+#'res <- sa_sizeChange(eta = eta)
 #'
 #'# > res
 #'# $`informative sample size`
@@ -178,7 +178,10 @@
 #'# sa_sizeChange(alpha = 0.05, beta = 0.05, eta = eta, persons = rnorm(10^6))
 #' }
 
-sa_sizeChange <- function(alpha = 0.05, beta = 0.05, eta, persons = rnorm(10^6)){
+sa_sizeChange <- function(eta,
+                          alpha = 0.05,
+                          beta = 0.05,
+                          persons = rnorm(10^6)) {
 
   subfunc <- function(stats) {
     e <- stats/sum(t)
@@ -191,23 +194,23 @@ sa_sizeChange <- function(alpha = 0.05, beta = 0.05, eta, persons = rnorm(10^6))
                 'total sample size' = n1) )
   }
 
-  call<-match.call()
+  call <- match.call()
 
   # design matrix W used only for data generation
   #    (not used for estimating in change_test() function)
   k <- length(eta) - 1
-  W <- cbind (rbind( diag(x=1, nrow = k, ncol = k), diag(x=1, nrow = k, ncol = k)),
+  W <- cbind(rbind( diag(x = 1, nrow = k, ncol = k), diag(x = 1, nrow = k, ncol = k)),
               c(rep(0,k), rep(1,k) ) )
 
-  y <- eRm::sim.rasch(persons=persons, items=colSums(-eta*t(W)))
+  y <- eRm::sim.rasch(persons = persons, items = colSums(-eta*t(W)))
 
   df <- 1
 
-  func <- function (x) {beta - pchisq(qchisq(1-alpha,1), 1, ncp = x)}
+  func <- function(x) {beta - pchisq(qchisq(1 - alpha,1), 1, ncp = x)}
   lambda0 <- uniroot(f = func, interval = c(0,10^3), tol = .Machine$double.eps^0.5)$root
-  t <- table(factor(rowSums(y),levels=1:(ncol(y)-1)))
+  t <- table(factor(rowSums(y),levels = 1:(ncol(y) - 1)))
 
-  est <- eRm::LLTM(X=y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
+  est <- eRm::LLTM(X = y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
   dev <- unname(est$etapar[ncol(y)/2])
 
   vstats <- change_test(X = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
@@ -217,7 +220,7 @@ sa_sizeChange <- function(alpha = 0.05, beta = 0.05, eta, persons = rnorm(10^6))
   results <- list(  'informative sample size' = unlist(do.call(cbind, res)[1,]),
                     'MC error of sample size' = unlist(do.call(cbind, res)[2,]),
                     'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
-                    'person score distribution' = round(t/sum(t), digits=3),
+                    'person score distribution' = round(t/sum(t), digits = 3),
                     'degrees of freedom' = df,
                     'noncentrality parameter' = round(lambda0, digits = 3),
                     'total sample size' = unlist(do.call(cbind, res)[3,]),

@@ -15,7 +15,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 25/10/2021
+# copyright (c) 2021, Last Modified 2/9/2024
 ######################################################################
 #' Power analysis of tests of invariance of item parameters between two groups
 #' of persons in binary Rasch model
@@ -121,16 +121,16 @@
 #'The square root of \eqn{Var(P)} is then used to quantify the random error of the suggested
 #'Monte Carlo computation procedure. It is called Monte Carlo error of power.
 #'
-#' @param alpha Probability of error of first kind.
 #' @param n_total Total sample size for which power shall be determined.
+#' @param local_dev A list of two vectors containing item parameters for the two person groups representing
+#' a deviation from the hypothesis to be tested locally per item.
+#' @param alpha Probability of error of first kind.
 #' @param persons1 A vector of person parameters in group 1 (drawn from a specified distribution).
 #' By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
 #' this number the more accurate are the computations. See Details.
 #' @param persons2 A vector of person parameters in group 2 (drawn from a specified distribution).
 #' By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
 #' this number the more accurate are the computations. See Details.
-#' @param local_dev A list of two vectors containing item parameters for the two person groups representing
-#' a deviation from the hypothesis to be tested locally per item.
 #'
 #'@return A list of results.
 #'  \item{power}{Power value for each test.}
@@ -216,15 +216,19 @@
 #' }
 
 
-powerRM <- function(alpha = 0.05, n_total, persons1 = rnorm(10^6), persons2 = rnorm(10^6), local_dev){
+powerRM <- function(n_total,
+                    local_dev,
+                    alpha = 0.05,
+                    persons1 = rnorm(10^6),
+                    persons2 = rnorm(10^6)){
 
   subfunc <- function(stats) {
-    e <- stats/(sum(t1)+sum(t2))
-    nc <- e * n_total * ((sum(t1)+sum(t2)) / (nrow(y1)+nrow(y2)))
-    f <- function(nc){pchisq(qchisq(1-alpha, ncol(y1)-1), ncol(y1)-1, nc)}
+    e <- stats/(sum(t1) + sum(t2))
+    nc <- e * n_total * ((sum(t1) + sum(t2)) / (nrow(y1) + nrow(y2)))
+    f <- function(nc){pchisq(qchisq(1 - alpha, ncol(y1) - 1), ncol(y1) - 1, nc)}
     beta <- f(nc)
-    se <- sqrt((2*df + 4*stats) * (1/((sum(t1)+sum(t2))))^2 *
-                 (numDeriv::grad(f, nc) * n_total * ((sum(t1)+sum(t2)) / (nrow(y1)+nrow(y2))))^2)
+    se <- sqrt((2*df + 4*stats) * (1/((sum(t1) + sum(t2))))^2 *
+                 (numDeriv::grad(f, nc) * n_total * ((sum(t1) + sum(t2)) / (nrow(y1) + nrow(y2))))^2)
     power <- 1 - beta
     return(list('power' = round(power, digits = 3),
                 'MC error of power' = round(se, digits = 3),
@@ -232,7 +236,7 @@ powerRM <- function(alpha = 0.05, n_total, persons1 = rnorm(10^6), persons2 = rn
                 'noncentrality parameter' = round(nc, digits = 3) ))
   }
 
-  call<-match.call()
+  call <- match.call()
 
   y1 <- eRm::sim.rasch(persons = persons1, items = local_dev[[1]])
   y2 <- eRm::sim.rasch(persons = persons2, items = local_dev[[2]])
@@ -243,19 +247,19 @@ powerRM <- function(alpha = 0.05, n_total, persons1 = rnorm(10^6), persons2 = rn
   r2 <- psychotools::raschmodel(y2)
   r3 <- psychotools::raschmodel(rbind(y1,y2))
 
-  t1 <- table(factor(rowSums(y1),levels=1:(ncol(y1)-1)))
-  t2 <- table(factor(rowSums(y2),levels=1:(ncol(y2)-1)))
+  t1 <- table(factor(rowSums(y1),levels = 1:(ncol(y1) - 1)))
+  t2 <- table(factor(rowSums(y2),levels = 1:(ncol(y2) - 1)))
 
-  vstats <- do.call(c, invar_test_obj(r1=r1, r2=r2, r3=r3, model = "RM"))
+  vstats <- do.call(c, invar_test_obj(r1 = r1, r2 = r2, r3 = r3, model = "RM"))
 
   res <- lapply(vstats, subfunc)
 
   results <- list(  'power' = unlist(do.call(cbind, res)[1,]),
                     'MC error of power' = unlist(do.call(cbind, res)[2,]),
                     'global deviation' = unlist(do.call(cbind, res)[3,]),
-                    'local deviation' = round(rbind("group1"=r1$coefficients, "group2"= r2$coefficients), digits = 3),
-                    'person score distribution in group 1' = round(t1/sum(t1), digits=3),
-                    'person score distribution in group 2' = round(t2/sum(t2), digits=3),
+                    'local deviation' = round(rbind("group1" = r1$coefficients, "group2" = r2$coefficients), digits = 3),
+                    'person score distribution in group 1' = round(t1/sum(t1), digits = 3),
+                    'person score distribution in group 2' = round(t2/sum(t2), digits = 3),
                     'degrees of freedom' = df,
                     'noncentrality parameter' = unlist(do.call(cbind, res)[4,]),
                     "call" = call)

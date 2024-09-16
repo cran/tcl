@@ -22,7 +22,7 @@ Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test 
   alternative that at least one item discriminates differently (only for binary data).
 }
 \details{
-The tests are based on the following model suggested in Draxler, Kurz, Gürer, and Nolte (2022)
+The tests are based on the following model suggested in Draxler, Kurz, Gürer, and Nolte (2024)
 
 \deqn{ \text{logit} \big( E(Y) \big ) = \tau + \alpha + \delta (r - 1), }
 
@@ -68,7 +68,7 @@ res <- discr_test(X = y)
 }
 \references{
 {
-Draxler, C., Kurz. A., Gürer, C., & Nolte, J. P. (2022). An improved inferential procedure to evaluate item
+Draxler, C., Kurz. A., Gürer, C., & Nolte, J. P. (2024). An improved inferential procedure to evaluate item
 discriminations in a conditional maximum likelihood framework. Manuscript submitted for publication.
 
  }

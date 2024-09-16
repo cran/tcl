@@ -6,17 +6,22 @@
 of persons in partial credit model}
 \usage{
 powerPCM(
-  alpha = 0.05,
   n_total,
+  local_dev,
+  alpha = 0.05,
   persons1 = rnorm(10^6),
-  persons2 = rnorm(10^6),
-  local_dev
+  persons2 = rnorm(10^6)
 )
 }
 \arguments{
-\item{alpha}{Probability of error of first kind.}
-
 \item{n_total}{Total sample size for which power shall be determined.}
+
+\item{local_dev}{A list consisting of two lists. One list refers to group 1, the other to group 2.
+Each of the two lists contains a numeric vector per item, i.e., each list contains as many vectors as items.
+Each vector contains the free item-cat. parameters of the respective item. The number of free item-cat.
+parameters per item equals the number of categories of the item minus 1.}
+
+\item{alpha}{Probability of error of first kind.}
 
 \item{persons1}{A vector of person parameters in group 1 (drawn from a specified distribution).
 By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
@@ -25,11 +30,6 @@ this number the more accurate are the computations. See Details.}
 \item{persons2}{A vector of person parameters in group 2 (drawn from a specified distribution).
 By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
 this number the more accurate are the computations. See Details.}
-
-\item{local_dev}{A list consisting of two lists. One list refers to group 1, the other to group 2.
-Each of the two lists contains a numeric vector per item, i.e., each list contains as many vectors as items.
-Each vector contains the free item-cat. parameters of the respective item. The number of free item-cat.
-parameters per item equals the number of categories of the item minus 1.}
 }
 \value{
 A list of results.
@@ -160,8 +160,7 @@ procedure. It is called Monte Carlo error of power.
 local_dev <-  list (  list(c( 0, 0), c( -1, 0), c( 0, 0),  c( 1, 0), c( 1, 0.5)) ,
                       list(c( 0, 0), c( -1, 0), c( 0, 0),  c( 1, 0), c( 0, -0.5))  )
 
-res <-  powerPCM(alpha = 0.05, n_total = 200, persons1 = rnorm(10^6),
-                  persons2 = rnorm(10^6), local_dev = local_dev)
+res <-  powerPCM(n_total = 200, local_dev = local_dev)
 
 # > res
 # $power

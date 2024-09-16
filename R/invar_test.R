@@ -22,7 +22,7 @@
 #'   for hypothesis of equality of item parameters between two groups of persons against a two-sided
 #'  alternative that at least one item parameter differs between the two groups.
 #'
-#'  Note that items are excluded for the computation of GR,LR, and W due to inappropriate
+#'  Note that items are excluded for the computation of GR, LR, and W due to inappropriate
 #'  response patterns within subgroups and for computation of RS due to inappropriate
 #'  response patterns in the total data. If the model is identified from the total data but not from one
 #'  or both subgroups only RS will be computed. If the model is not identified from the total data,
@@ -124,14 +124,14 @@ invar_test <- function(X, splitcr = "median", model = "RM"){
   #    - ill-conditioned data matrix (restricted and unrestricted models)
   #---------------------------------------------------------------------
 
-  Xcheck<- tcl_datcheck_full(X,model)
+  Xcheck <- tcl_datcheck_full(X,model)
   if (Xcheck$Xcheck == "none") return(list("test" = NA, "df" = NA,"pvalue" = NA,
-                                           "deleted_items"=NA, "call" = call))
+                                           "deleted_items" = NA, "call" = call))
   del_pos_full <- Xcheck$del_pos  # check full model
   # if (any(!is.na(del_pos_full))) X <- X[,-del_pos_full]
 
   e <- tcl_splitcr(X = X, splitcr = splitcr, model = model)
-  Xlist_check <- tcl_datcheck(X=X, Xlist = e$X.list, model = model)
+  Xlist_check <- tcl_datcheck(X = X, Xlist = e$X.list, model = model)
 
   y  <- e$X.el
   y1 <- e$X.list[[1]]
@@ -143,33 +143,33 @@ invar_test <- function(X, splitcr = "median", model = "RM"){
 
   test_switch <- function(option) {
     switch(option,
-           "full" = invar_test_full(y=y, y1=y1, y2=y2, model=model, X=X, splitcr = splitcr, del_pos=del_pos_full),
+           "full" = invar_test_full(y = y, y1 = y1, y2 = y2, model = model, X = X, splitcr = splitcr, del_pos = del_pos_full),
            # "RS" = invar_test_RS(y, y1, y2, model),
-           "RS" =  RStest(X=X, splitcr = splitcr, model=model,del_pos=del_pos_full), # addded AK 20-02-2022
-           "none" = list("test" = NA, "df" = NA,"pvalue" = NA,"deleted_items"=NA, "call" = call),
+           "RS" =  RStest(X = X, splitcr = splitcr, model = model, del_pos = del_pos_full), # addded AK 20-02-2022
+           "none" = list("test" = NA, "df" = NA,"pvalue" = NA,"deleted_items" = NA, "call" = call),
            stop("Invalid `option` value")
     )
   }
 
   res.list <- test_switch(option = Xlist_check)
 
-  if(Xlist_check=="full") {
-    if(is.na(e$del_pos)) {
+  if (Xlist_check == "full") {
+    if (any(is.na(e$del_pos))) {
       e$del_pos <- "none"
     } else {
       e$del_pos <-  paste0("I", e$del_pos)
     }
 
-    if(is.na(del_pos_full))  {
+    if (any(is.na(del_pos_full)))  {
       del_pos_full <- "none"
     } else {
       del_pos_full <- paste0("I", del_pos_full)
     }
 
-    res.list$deleted_items <- list("GR"=e$del_pos, "LR"=e$del_pos, "RS"=del_pos_full,"W"=e$del_pos) # added AK 20-02-2022
+    res.list$deleted_items <- list("GR" = e$del_pos, "LR" = e$del_pos, "RS" = del_pos_full,"W" = e$del_pos) # added AK 20-02-2022
   }
 
-  if(Xlist_check=="RS") {
+  if (Xlist_check == "RS") {
     test.stats <- c( NA, NA, res.list$RS, NA)
     names(test.stats) <- c("GR", "LR", "RS", "W")
 
@@ -179,7 +179,7 @@ invar_test <- function(X, splitcr = "median", model = "RM"){
     pvalue <- c(NA,NA,res.list$pvalue,NA)
     names(pvalue) <- c("GR", "LR", "RS", "W")
 
-    if(is.na(del_pos_full))  {
+    if (any(is.na(e$del_pos)))  {
       del_pos_full <- "none"
     } else {
       del_pos_full <- paste0("I", del_pos_full)
@@ -189,7 +189,7 @@ invar_test <- function(X, splitcr = "median", model = "RM"){
     res.list <- list("test" = round(test.stats, digits = 3),
                      "df" = df_vec,
                      "pvalue" = pvalue,
-                     "deleted_items" = list(  "GR"=NA,"LR"=NA,"RS"=del_pos_full,"W"=NA)) # addded AK 20-02-2022
+                     "deleted_items" = list(  "GR" = NA,"LR" = NA,"RS" = del_pos_full,"W" = NA)) # addded AK 20-02-2022
   }
 
   res.list$call <- call

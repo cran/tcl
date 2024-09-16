@@ -4,14 +4,14 @@
 \alias{post_hocRM}
 \title{Power analysis of tests of invariance of item parameters between two groups of persons in binary Rasch model}
 \usage{
-post_hocRM(alpha = 0.05, data, x)
+post_hocRM(data, x, alpha = 0.05)
 }
 \arguments{
-\item{alpha}{Probability of error of first kind.}
-
 \item{data}{Binary data matrix.}
 
 \item{x}{A numeric vector of length equal to number of persons containing zeros and ones indicating group membership of the persons.}
+
+\item{alpha}{Probability of error of first kind.}
 }
 \value{
 A list of results.
@@ -65,7 +65,7 @@ y <- eRm::raschdat1
 n <- nrow(y) # sample size
 x <- c( rep(0,n/2), rep(1,n/2) ) # binary covariate
 
-res <-  post_hocRM(alpha = 0.05, data = y, x = x)
+res <-  post_hocRM(data = y, x = x, alpha = 0.05)
 
 # > res
 # $test
