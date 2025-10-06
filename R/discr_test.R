@@ -12,19 +12,19 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2022, Last Modified 02/05/2023
+# copyright (c) 2025, Last Modified 17/09/2025
 ##############################################################################
 #' Testing item discriminations
 #'
-#' Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test of
+#' Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test of
 #'  hypothesis of equal item discriminations against the
 #'   alternative that at least one item discriminates differently (only for binary data).
 #'
-#'The tests are based on the following model suggested in Draxler, Kurz, Gürer, and Nolte (2024)
+#'The tests are based on the following model suggested in Draxler, Kurz, Guerer, and Nolte (2024)
 #'
 #'\deqn{ \text{logit} \big( E(Y) \big ) = \tau + \alpha + \delta (r - 1), }
 #'
-#' where \eqn{E(Y)} ist the expected value of a binary response (of a person to an item),
+#' where \eqn{E(Y)} is the expected value of a binary response (of a person to an item),
 #' \eqn{r = 1, \dots, k - 1} is the person score, i.e., number of correct responses of that person
 #' when responding to \eqn{k} items, \eqn{\tau} is the respective person parameter and \eqn{\alpha} and
 #' \eqn{\delta} are two parameters referring to the respective item. The parameter \eqn{\alpha}
@@ -39,16 +39,17 @@
 #' The alternative assumes that at least one \eqn{\delta} parameter is not equal to \eqn{0}.
 #'
 #'
-#' @param X Data matrix.
-#' @return A list of test statistics, degrees of freedom, and p-values.
-#'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+#' @param data Data matrix.
+#' @return A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+#'  \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR)statistics.}
 #'  \item{df}{A numeric vector of corresponding degrees of freedom.}
 #'  \item{pvalue}{A vector of corresponding p-values.}
+#'  \item{data}{Data matrix.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
-#' Draxler, C., Kurz. A., Gürer, C., & Nolte, J. P. (2024). An improved inferential procedure to evaluate item
-#' discriminations in a conditional maximum likelihood framework. Manuscript submitted for publication.
+#' Draxler, C., Kurz, A., Guerer, C., & Nolte, J. P. (2024). An Improved Inferential Procedure to Evaluate Item Discriminations
+#' in a Conditional Maximum Likelihood Framework. \emph{Journal of Educational and Behavioral Statistics}, 49(3), 403-430.
 #'
 #'  }
 #' @keywords htest
@@ -62,17 +63,17 @@
 #' data(data.pisaMath)
 #' y <- data.pisaMath$data[, grep(names(data.pisaMath$data), pattern = "M" )]
 #'
-#' res <- discr_test(X = y)
+#' res <- discr_test(data = y)
 #' # $test
-#' # GR     LR     RS      W
-#' # 72.430 73.032 76.725 73.470
+#' #      W     LR     RS     GR
+#' # 72.470 73.032 76.725 73.430
 #' #
 #' # $df
-#' # GR LR RS  W
+#' # W LR RS  GR
 #' # 10 10 10 10
 #' #
 #' # $pvalue
-#' #       GR        LR        RS         W
+#' #       W        LR        RS         GR
 #' # "< 0.001" "< 0.001" "< 0.001" "< 0.001"
 #' #
 #' # $call
@@ -80,8 +81,8 @@
 #'
 #'}
 
-discr_test <- function(X) {
-  # X = observed data matrix comprised of k columns
+discr_test <- function(data) {
+  # data = observed data matrix comprised of k columns
 
   call <- match.call()
 
@@ -180,7 +181,7 @@ discr_test <- function(X) {
   f2 <- function(j,l1,l2) cbind(l1[,,j], l2[[j]])
 
 
-  y <- X
+  y <- data
 
   ###################################################
   #               main programm
@@ -262,15 +263,28 @@ discr_test <- function(X) {
   pvalue <- 1 - (sapply(test.stats, stats::pchisq, df = df))
   pvalue <- pvalr(pvalue, digits = 3)
 
-
-
   df_vec <- c(df,df,df,df)
   names(df_vec) <- c("GR", "LR", "RS", "W")
 
   res.list <- list("test" = round(test.stats, digits = 3),
                    "df" = df_vec,
-                   "pvalue" = pvalue)
+                   "pvalue" = pvalue,
+                   "data" = y)
 
   res.list$call <- call
+
+  # Define test order
+  test_order <- c("W", "LR", "RS", "GR")
+
+  # Reorder selected elements
+  for (nm in c("test", "df", "pvalue")) {
+    res.list[[nm]] <- res.list[[nm]][test_order]
+  }
+
+  res.list <- structure(
+    res.list,
+    class = "tcl"
+  )
+
   return(res.list)
 }

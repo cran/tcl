@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # powerChange
 #
@@ -15,7 +13,7 @@
 # the hypothesis to be tested
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 2/09/2024
+# copyright (c) 2025, Last Modified 2/01/2025
 ######################################################################
 #' Power analysis of tests in context of measurement of change using LLTM
 #'
@@ -50,10 +48,10 @@
 #'by a single number. The power of the tests can be determined given a user-specified total sample size denoted by \eqn{n_{total}}.
 #'The noncentrality parameter \eqn{\lambda} can then be expressed by \eqn{\lambda = n_{total}* (n_{infsim} / n_{totalsim}) * e},
 #'where \eqn{n_{totalsim}} denotes the total number of persons in the simulated data and \eqn{n_{infsim} / n_{totalsim}} is the proportion of
-#'informative persons in the sim. data. Let \eqn{q_{\alpha}} be the \eqn{1 - \alpha} quantile of the central \eqn{\chi^2} distribution with \eqn{df = 1}.
+#'informative persons in the sim. data. Let \eqn{q_{1- \alpha}} be the \eqn{1 - \alpha} quantile of the central \eqn{\chi^2} distribution with \eqn{df = 1}.
 #'Then,
 #'
-#'\deqn{power = 1 - F_{df, \lambda} (q_{\alpha}),}
+#'\deqn{power = 1 - F_{df, \lambda} (q_{1- \alpha}),}
 #'
 #'where \eqn{F_{df, \lambda}} is the cumulative distribution function of the noncentral \eqn{\chi^2} distribution with \eqn{df = 1} and
 #'\eqn{\lambda = n_{total} * (n_{infsim} / n_{totalsim}) * e}. Thereby, it is assumed that \eqn{n_{total}} is composed of a frequency distribution
@@ -98,14 +96,15 @@
 #' @param persons A vector of person parameters (drawn from a specified distribution). By default \eqn{10^6} parameters are drawn at
 #' random from the standard normal distribution. The larger this number the more accurate are the computations. See Details.
 #'
-#'@return A list of results.
+#' @return A list of results of class \code{tcl_power}.
 #'  \item{power}{Power value for each test.}
-#'  \item{MC error of power}{Monte Carlo error of power computation for each test.}
-#'  \item{deviation}{Shift parameter estimated from the simulated data representing the constant shift of item parameters between time points 1 and 2.}
-#'  \item{person score distribution}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
-#'  i.e., minimum and maximum score, are omitted. Note that the person score distribution does also have an influence on the power of the tests.}
-#'  \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
-#'  \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which power is determined.}
+#'  \item{mc_err_power}{Monte Carlo error of power computation for each test.}
+#'  \item{dev_est_shift}{Shift parameter estimated from the simulated data, representing the constant shift of
+#'  item parameters between time points 1 and 2.}
+#'  \item{score_dist}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
+#'  i.e., minimum and maximum scores, are omitted. Note that the person score distribution also has an influence on the power of the tests.}
+#'  \item{df}{Degrees of freedom (\eqn{df}).}
+#'  \item{ncp}{Noncentrality parameter (\eqn{\lambda}) of the \eqn{\chi^2} distribution from which power is determined.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
@@ -137,22 +136,22 @@
 #'#     W    LR    RS    GR
 #'# 0.905 0.910 0.908 0.911
 #'#
-#'# $`MC error of power`
+#'# $mc_err_power #`MC error of power`
 #'#     W    LR    RS    GR
 #'# 0.002 0.002 0.002 0.002
 #'#
-#'# $`deviation (estimate of shift parameter)`
+#'# $dev_est_shift #`deviation (estimate of shift parameter)`
 #'# [1] 0.499
 #'#
-#'# $`person score distribution`
+#'# $score_dist #`person score distribution`
 #'#
 #'#     1     2     3     4     5     6     7
 #'# 0.034 0.093 0.181 0.249 0.228 0.147 0.068
 #'#
-#'# $`degrees of freedom`
+#'# $df #`degrees of freedom`
 #'# [1] 1
 #'#
-#'# $`noncentrality parameter`
+#'# $ncp #`noncentrality parameter`
 #'#      W     LR     RS     GR
 #'# 10.692 10.877 10.815 10.939
 #'#
@@ -195,16 +194,28 @@ powerChange <- function(n_total,
   est <- eRm::LLTM(X = y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
   dev <- unname(est$etapar[ncol(y)/2])
 
-  vstats <- change_test(X = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
+  vstats <- change_test(data = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
 
   res <- lapply(vstats, subfunc)
 
-  results <- list(  'power' = unlist(do.call(cbind, res)[1,]),
-                    'MC error of power' = unlist(do.call(cbind, res)[2,]),
-                    'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
-                    'person score distribution' = round(t/sum(t), digits = 3),
-                    'degrees of freedom' = 1,
-                    'noncentrality parameter' = unlist(do.call(cbind, res)[3,]),
-                    "call" = call)
+  # results <- list(  'power' = unlist(do.call(cbind, res)[1,]),
+  #                   'MC error of power' = unlist(do.call(cbind, res)[2,]),
+  #                   'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
+  #                   'person score distribution' = round(t/sum(t), digits = 3),
+  #                   'degrees of freedom' = 1,
+  #                   'noncentrality parameter' = unlist(do.call(cbind, res)[3,]),
+  #                   "call" = call)
+  results <- structure(
+    list(
+      power = unlist(do.call(cbind, res)[1, ]),
+      mc_error = unlist(do.call(cbind, res)[2, ]),
+      dev = round(dev, digits = 3),
+      score_dist = round(t / sum(t), digits = 3),
+      df = 1,
+      ncp = unlist(do.call(cbind, res)[3, ]),
+      call = call
+    ),
+    class = "tcl_power"
+  )
   return(results)
 }

@@ -4,19 +4,19 @@
 \alias{tcl_scorefun}
 \title{Computation of score function.}
 \usage{
-tcl_scorefun(X, eta, W, model = "RM")
+tcl_scorefun(data, eta, W, model = "RM")
 }
 \arguments{
-\item{X}{data matrix.}
+\item{data}{data matrix.}
 
 \item{eta}{numeric vector of item easiness parameters.}
 
 \item{W}{design matrix.}
 
-\item{model}{RM, PCM, RSM, LLTM.}
+\item{model}{RM, PCM, RSM, LLTM. Default is set to "RM".}
 }
 \value{
-Score function evaluated at eta
+Score function evaluated at eta.
 }
 \description{
 Uses function \code{jacobian()} from numDeriv package to compute (approximate numerically) score function
@@ -28,7 +28,7 @@ Uses function \code{jacobian()} from numDeriv package to compute (approximate nu
 # Rasch model with beta_1 restricted to 0
 y <- eRm::raschdat1
 res <- eRm::RM(X = y, sum0 = FALSE)
-scorefun <- tcl_scorefun(X = y, eta = res$etapar, model = "RM")
+scorefun <- tcl_scorefun(data = y, eta = res$etapar, model = "RM")
 }
 }
 \references{

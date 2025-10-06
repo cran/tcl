@@ -4,10 +4,10 @@
 \alias{invar_test}
 \title{Test of invariance of item parameters between two groups.}
 \usage{
-invar_test(X, splitcr = "median", model = "RM")
+invar_test(data, splitcr = "median", model = "RM")
 }
 \arguments{
-\item{X}{Data matrix.}
+\item{data}{Data matrix.}
 
 \item{splitcr}{Split criterion which is either "mean", "median" or a numeric vector x.
 \describe{
@@ -19,15 +19,19 @@ invar_test(X, splitcr = "median", model = "RM")
 \item{model}{RM, PCM, RSM}
 }
 \value{
-A list of test statistics, degrees of freedom, and p-values.
- \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+ \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
  \item{df}{A numeric vector of corresponding degrees of freedom.}
  \item{pvalue}{A vector of corresponding p-values.}
  \item{deleted_items}{A list with numeric vectors of item numbers that were excluded before computing corresponding test statistics.}
+ \item{sample_size_informative}{Informative sample size of data omitting persons with min. and max score.}
+ \item{effect}{Numeric value for each test representing the effect size. A real number between 0 and 1, interpreted as
+ a proportion of pseudo -variance between the two groups of persons considered.}
+ \item{data}{Data matrix.}
  \item{call}{The matched call.}
 }
 \description{
-Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics
+Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test statistics
   for hypothesis of equality of item parameters between two groups of persons against a two-sided
  alternative that at least one item parameter differs between the two groups.
 }
@@ -44,7 +48,7 @@ Note that items are excluded for the computation of GR, LR, and W due to inappro
 y <- eRm::sim.rasch(persons = rnorm(400), c(0,-3,-2,-1,0,1,2,3))
 x <- c(rep(1,200),rep(0,200))
 
-res <- invar_test(y, splitcr = x, model = "RM")
+res <- invar_test(data = y, splitcr = x, model = "RM")
 
 res$test # test statistics
 res$df # degrees of freedoms
@@ -52,16 +56,16 @@ res$pvalue # p-values
 res$deleted_items # excluded items
 
 $test
-  GR    LR    RS     W
-14.492 14.083 13.678 12.972
+    W     LR     RS     GR
+14.972 14.083 13.678 12.492
 
 $df
-GR LR RS  W
+W LR RS GR
 7  7  7  7
 
 $pvalue
-  GR    LR    RS     W
-"0.043" "0.050" "0.057" "0.073"
+   W      LR      RS     GR
+"0.073" "0.050" "0.057" "0.043"
 
 $deleted_items
  $deleted_items$GR
@@ -76,6 +80,12 @@ $deleted_items
  $deleted_items$W
  [1] "none"
 
+$sample_size_informative
+[1] 395
+
+$effect
+    W    LR    RS    GR
+0.014 0.014 0.014 0.014
 
 $call
 invar_test(X = y, splitcr = x, model = "RM")
@@ -89,8 +99,8 @@ Draxler, C. (2010). Sample Size Determination for Rasch Model Tests. Psychometri
 Draxler, C., & Alexandrowicz, R. W. (2015). Sample Size Determination Within the Scope of Conditional Maximum Likelihood Estimation
 with Special Focus on Testing the Rasch Model. Psychometrika, 80(4), 897–919.
 
-Draxler, C., Kurz, A., & Lemonte, A. J. (2020). The Gradient Test and its Finite Sample Size Properties in a Conditional Maximum Likelihood
-and Psychometric Modeling Context. Communications in Statistics-Simulation and Computation, 1-19.
+Draxler, C., Kurz, A., & Lemonte, A. J. (2022). The gradient test and its finite sample size properties in a conditional
+maximum likelihood and psychometric modeling context. Communications in Statistics-Simulation and Computation, 51(6), 3185-3203.
 
 Glas, C. A. W., & Verhelst, N. D. (1995a). Testing the Rasch Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 Rasch Models: Foundations, Recent Developments, and Applications (pp. 69–95). New York: Springer.

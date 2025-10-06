@@ -20,17 +20,17 @@ are drawn at random from the standard normal distribution. The larger this numbe
 See Details.}
 }
 \value{
-A list results.
- \item{informative sample size}{Informative sample size for each test, omitting persons with min. and max score.}
- \item{MC error of sample size}{Monte Carlo error of sample size computation for each test.}
- \item{deviation}{Shift parameter estimated from the simulated data representing the constant shift of item
+A list of results of class \code{tcl_sa_size}.
+ \item{sample_size_informative}{Informative sample size for each test, omitting persons with min. and max score.}
+ \item{mc_error_sample_size}{Monte Carlo error of sample size computation for each test.}
+ \item{dev}{Shift parameter estimated from the simulated data representing the constant shift of item
  parameters between time points 1 and 2.}
- \item{person score distribution}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
+ \item{score_dist}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
  i.e., minimum and maximum score, are omitted.
  Note that the person score distribution does also have an influence on the sample size.}
- \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
- \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
- \item{total sample size}{Total sample size for each test. See Details.}
+ \item{df}{Degrees of freedom \eqn{df}.}
+ \item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
+ \item{sample_size_total}{Total sample size for each test. See Details.}
  \item{call}{The matched call.}
 }
 \description{
@@ -130,34 +130,34 @@ eta <- c(-2,-1,1,2,0.5)
 res <- sa_sizeChange(eta = eta)
 
 # > res
-# $`informative sample size`
+# $sample_size_informative #`informative sample size`
 #   W  LR  RS  GR
 # 177 174 175 173
 #
-# $`MC error of sample size`
+# $mc_error_sample_size #`MC error of sample size`
 #     W    LR    RS    GR
 # 1.321 1.287 1.299 1.276
 #
-# $`deviation (estimate of shift parameter)`
+# $dev #`deviation (estimate of shift parameter)`
 # [1] 0.501
 #
-# $`person score distribution`
+# $score_dist #`person score distribution`
 #
 #     1     2     3     4     5     6     7
 # 0.034 0.094 0.181 0.249 0.227 0.147 0.068
 #
-# $`degrees of freedom`
+# $df #`degrees of freedom`
 # [1] 1
 #
-# $`noncentrality parameter`
+# $ncp #`noncentrality parameter`
 # [1] 12.995
 #
-# $`total sample size`
+# $sample_size_total #`total sample size`
 #   W  LR  RS  GR
 # 182 179 180 178
 #
 # $call
-# sa_sizeChange(alpha = 0.05, beta = 0.05, eta = eta, persons = rnorm(10^6))
+# sa_sizeChange(eta = eta)
 }
 }
 \references{

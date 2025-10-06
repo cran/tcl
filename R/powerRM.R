@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # powerRM
 #
@@ -15,7 +13,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 2/9/2024
+# copyright (c) 2025, Last Modified 10/2/2025
 ######################################################################
 #' Power analysis of tests of invariance of item parameters between two groups
 #' of persons in binary Rasch model
@@ -67,11 +65,11 @@
 #'parameter \eqn{\lambda} can then be expressed by
 #'\eqn{\lambda = n_{total}* (n_{infsim} / n_{totalsim}) * e}, where \eqn{n_{totalsim}} denotes
 #'the total number of persons in the simulated data and \eqn{n_{infsim} / n_{totalsim}} is
-#'the proportion of informative persons in the sim. data. Let \eqn{q_{\alpha}} be the
+#'the proportion of informative persons in the sim. data. Let \eqn{q_{1- \alpha}} be the
 #'\eqn{1 - \alpha} quantile of the central \eqn{\chi^2} distribution with df equal to the
 #'number items minus 1. Then,
 #'
-#'\deqn{power = 1 - F_{df, \lambda} (q_{\alpha}),}
+#'\deqn{power = 1 - F_{df, \lambda} (q_{1- \alpha}),}
 #'
 #'where \eqn{F_{df, \lambda}} is the cumulative distribution function of the noncentral
 #'\eqn{\chi^2} distribution with \eqn{df} equal to the number of items minus 1
@@ -122,8 +120,11 @@
 #'Monte Carlo computation procedure. It is called Monte Carlo error of power.
 #'
 #' @param n_total Total sample size for which power shall be determined.
+#' @param obj An object of class `LR` from the `eRm` package. If provided, `local_dev` is extracted automatically.
+#' If missing, `local_dev` must be set manually.
 #' @param local_dev A list of two vectors containing item parameters for the two person groups representing
 #' a deviation from the hypothesis to be tested locally per item.
+#' Note that the ‘reference category’, i.e. the first item parameter, also needs to be listed and set to zero.
 #' @param alpha Probability of error of first kind.
 #' @param persons1 A vector of person parameters in group 1 (drawn from a specified distribution).
 #' By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
@@ -132,20 +133,20 @@
 #' By default \eqn{10^6} parameters are drawn at random from the standard normal distribution. The larger
 #' this number the more accurate are the computations. See Details.
 #'
-#'@return A list of results.
+#'@return A list of results of class \code{tcl_power}.
 #'  \item{power}{Power value for each test.}
-#'  \item{MC error of power}{Monte Carlo error of power computation for each test.}
-#'  \item{global deviation}{Global deviation computed from simulated data for each test. See Details.}
-#'  \item{local deviation}{CML estimates of item parameters in both groups of persons
+#'  \item{mc_error_power}{Monte Carlo error of power computation for each test.}
+#'  \item{dev_global}{Global deviation computed from simulated data for each test. See Details.}
+#'  \item{dev_local}{CML estimates of item parameters in both groups of persons
 #'  obtained from the simulated data expressing a deviation from the hypothesis to be tested locally per item.}
-#'  \item{person score distribution in group 1}{Relative frequencies of person scores in group 1 observed in
+#'  \item{score_dist_group1}{Relative frequencies of person scores in group 1 observed in
 #'  simulated data. Uninformative scores, i.e., minimum and maximum score, are omitted.
 #'  Note that the person score distribution does also have an influence on the power of the tests.}
-#'  \item{person score distribution in group 2}{Relative frequencies of person scores in group 2 observed in
+#'  \item{score_dist_group2}{Relative frequencies of person scores in group 2 observed in
 #'  simulated data. Uninformative scores, i.e., minimum and maximum score, are omitted.
 #'  Note that the person score distribution does also have an influence on the power of the tests.}
-#'  \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
-#'  \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which power is determined.}
+#'  \item{df}{Degrees of freedom \eqn{df}.}
+#'  \item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which power is determined.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
@@ -154,8 +155,8 @@
 #' Draxler, C., & Alexandrowicz, R. W. (2015). Sample Size Determination Within the Scope of Conditional Maximum Likelihood Estimation
 #' with Special Focus on Testing the Rasch Model. Psychometrika, 80(4), 897–919.
 #'
-#' Draxler, C., Kurz, A., & Lemonte, A. J. (2020). The Gradient Test and its Finite Sample Size Properties in a Conditional Maximum Likelihood
-#' and Psychometric Modeling Context. Communications in Statistics-Simulation and Computation, 1-19.
+#' Draxler, C., Kurz, A., & Lemonte, A. J. (2022). The gradient test and its finite sample size properties in a conditional
+#' maximum likelihood and psychometric modeling context. Communications in Statistics-Simulation and Computation, 51(6), 3185-3203.
 #'
 #' Glas, C. A. W., & Verhelst, N. D. (1995a). Testing the Rasch Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 #' Rasch Models: Foundations, Recent Developments, and Applications (pp. 69–95). New York: Springer.
@@ -170,7 +171,8 @@
 #' @seealso \code{\link{sa_sizeRM}}, and \code{\link{post_hocRM}}.
 #' @examples
 #' \dontrun{
-#' # Numerical example
+#' # Numerical example of power analysis
+#' # for the Rasch model with beta_1 restricted to 0
 #'
 #'res <-  powerRM(n_total = 130, local_dev = list( c(0, -0.5, 0, 0.5, 1) , c(0, 0.5, 0, -0.5, 1)))
 #'
@@ -179,33 +181,33 @@
 #'#     W    LR    RS    GR
 #'# 0.824 0.840 0.835 0.845
 #'#
-#'# $`MC error of power`
+#'# $mc_error_power #`MC error of power`
 #'#     W    LR    RS    GR
 #'# 0.002 0.002 0.002 0.002
 #'#
-#'# $`global deviation`
+#'# $dev_global #`global deviation`
 #'#     W    LR    RS    GR
 #'# 0.118 0.122 0.121 0.124
 #'#
-#'# $`local deviation`
+#'# $dev_local #`local deviation`
 #'#         Item2 Item3  Item4 Item5
 #'# group1 -0.499 0.005  0.500 1.001
 #'# group2  0.501 0.003 -0.499 1.003
 #'#
-#'# $`person score distribution in group 1`
+#'# $score_dist_group1 #`person score distribution in group 1`
 #'#
 #'#     1     2     3     4
 #'# 0.249 0.295 0.269 0.187
 #'#
-#'# $`person score distribution in group 2`
+#'# $score_dist_group2 #`person score distribution in group 2`
 #'#
 #'#     1     2     3     4
 #'# 0.249 0.295 0.270 0.186
 #'#
-#'# $`degrees of freedom`
+#'# $df #`degrees of freedom`
 #'# [1] 4
 #'#
-#'# $`noncentrality parameter`
+#'# $ncp #`noncentrality parameter`
 #'#      W     LR     RS     GR
 #'# 12.619 13.098 12.937 13.264
 #'#
@@ -213,14 +215,45 @@
 #'# powerRM(n_total = 130, local_dev = list(c(0, -0.5, 0, 0.5, 1),
 #'#                                         c(0, 0.5, 0, -0.5, 1)))
 #'
+#'# Numerical example of power analysis for the Rasch model
+#'# extracting local_dev from an eRm object
+#'dat = eRm::sim.rasch(1000,10)
+#'mod = eRm::RM(dat)
+#'
+#'obj <- eRm::LRtest(mod)
+#'res <- powerRM(n_total = 130, obj = obj)
 #' }
 
-
 powerRM <- function(n_total,
-                    local_dev,
+                    obj = NULL,
+                    local_dev = NULL,
                     alpha = 0.05,
                     persons1 = rnorm(10^6),
                     persons2 = rnorm(10^6)){
+
+  # If obj is provided, extract local_dev
+  if (!is.null(obj)) {
+    stopifnot("obj must be of eRm class 'LR'" = inherits(obj, "LR"))
+    local_dev <- get_eRm_arg(obj, arg = "local_dev")
+    message("Extracted local_dev from obj.")
+  }
+
+  # If local_dev is still NULL, stop with an error
+  if (is.null(local_dev)) {
+    stop("Either 'obj' (of eRm class 'LR') or 'local_dev' must be provided.")
+  }
+
+  # Call sample size function with extracted or provided local_dev
+  results <- powerRM_compute(n_total,local_dev, alpha, persons1, persons2)
+  return(results)
+}
+
+#' @noRd
+powerRM_compute <- function(n_total,
+                            local_dev,
+                            alpha = 0.05,
+                            persons1 = rnorm(10^6),
+                            persons2 = rnorm(10^6)){
 
   subfunc <- function(stats) {
     e <- stats/(sum(t1) + sum(t2))
@@ -230,10 +263,12 @@ powerRM <- function(n_total,
     se <- sqrt((2*df + 4*stats) * (1/((sum(t1) + sum(t2))))^2 *
                  (numDeriv::grad(f, nc) * n_total * ((sum(t1) + sum(t2)) / (nrow(y1) + nrow(y2))))^2)
     power <- 1 - beta
-    return(list('power' = round(power, digits = 3),
-                'MC error of power' = round(se, digits = 3),
-                'global deviation' = round(e, digits = 3),
-                'noncentrality parameter' = round(nc, digits = 3) ))
+    return(list(
+      power = round(power, digits = 3),
+      mc_error = round(se, digits = 3),
+      dev_global = round(e, digits = 3),
+      ncp = round(nc, digits = 3)
+    ))
   }
 
   call <- match.call()
@@ -254,14 +289,19 @@ powerRM <- function(n_total,
 
   res <- lapply(vstats, subfunc)
 
-  results <- list(  'power' = unlist(do.call(cbind, res)[1,]),
-                    'MC error of power' = unlist(do.call(cbind, res)[2,]),
-                    'global deviation' = unlist(do.call(cbind, res)[3,]),
-                    'local deviation' = round(rbind("group1" = r1$coefficients, "group2" = r2$coefficients), digits = 3),
-                    'person score distribution in group 1' = round(t1/sum(t1), digits = 3),
-                    'person score distribution in group 2' = round(t2/sum(t2), digits = 3),
-                    'degrees of freedom' = df,
-                    'noncentrality parameter' = unlist(do.call(cbind, res)[4,]),
-                    "call" = call)
+  results <- structure(
+    list(
+      power = unlist(do.call(cbind, res)[1, ]),
+      mc_error_power = unlist(do.call(cbind, res)[2, ]),
+      dev_global = unlist(do.call(cbind, res)[3, ]),
+      dev_local = round(rbind(group1 = r1$coefficients, group2 = r2$coefficients), digits = 3),
+      score_dist_group1 = round(t1 / sum(t1), digits = 3),
+      score_dist_group2 = round(t2 / sum(t2), digits = 3),
+      df = df,
+      ncp = unlist(do.call(cbind, res)[4, ]),
+      call = call
+    ),
+    class = "tcl_power"
+  )
   return(results)
 }

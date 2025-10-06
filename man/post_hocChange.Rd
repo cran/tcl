@@ -12,16 +12,16 @@ post_hocChange(data, alpha = 0.05)
 \item{alpha}{Probability of error of first kind.}
 }
 \value{
-A list of results.
-\item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR)  test statistics.}
- \item{power}{Posthoc power value for each test.}
- \item{observed deviation}{CML estimate of shift parameter expressing observed deviation from hypothesis to be tested.}
- \item{person score distribution}{Relative frequencies of person scores. Uninformative scores, i.e., minimum and maximum score,
- are omitted. Note that the person score distribution does also have an influence on the power of the tests.}
- \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
- \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which power is determined.
- It equals observed value of test statistic.}
- \item{call}{The matched call.}
+A list of results of class \code{tcl_post_hoc}.
+\item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
+\item{power}{Posthoc power value for each test.}
+\item{dev_obs}{CML estimate of shift parameter expressing observed deviation from the hypothesis to be tested.}
+\item{score_dist}{Relative frequencies of person scores. Uninformative scores, i.e., minimum and maximum scores,
+are omitted. Note that the person score distribution also influences the power of the tests.}
+\item{df}{Degrees of freedom \eqn{df}.}
+\item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which power is determined.
+It equals the observed value of the test statistic.}
+\item{call}{The matched call.}
 }
 \description{
 Returns post hoc power of Wald (W), likelihood ratio (LR), Rao score (RS)
@@ -40,9 +40,9 @@ error of the first kind \eqn{\alpha} the post hoc power of the tests can be dete
 More details about the distributions of the test statistics and the relationship between \eqn{\lambda}, power, and
 sample size can be found in Draxler and Alexandrowicz (2015).
 
-In particular, let \eqn{q_{\alpha}} be the \eqn{1- \alpha} quantile of the central \eqn{\chi^2} distribution with df = 1. Then,
+In particular, let \eqn{q_{1- \alpha}} be the \eqn{1- \alpha} quantile of the central \eqn{\chi^2} distribution with df = 1. Then,
 
-\deqn{power = 1 - F_{df, \lambda} (q_{\alpha}),}
+\deqn{power = 1 - F_{df, \lambda} (q_{1- \alpha}),}
 
 where \eqn{F_{df, \lambda}} is the cumulative distribution function of the noncentral \eqn{\chi^2} distribution with
 \eqn{df = 1} and \eqn{\lambda} equal to the observed value of the test statistic.
@@ -78,18 +78,18 @@ res <- post_hocChange(data = y, alpha = 0.05)
 #     W    LR    RS    GR
 # 0.880 0.886 0.884 0.888
 #
-# $`observed deviation (estimate of shift parameter)`
+# $dev_obs #`observed deviation (estimate of shift parameter)`
 # [1] 0.504
 #
-# $`person score distribution`
+# $score_dist #`person score distribution`
 #
 #     1     2     3     4     5     6     7
 # 0.047 0.047 0.236 0.277 0.236 0.108 0.047
 #
-# $`degrees of freedom`
+# $df #`degrees of freedom`
 # [1] 1
 #
-# $`noncentrality parameter`
+# $ncp # `noncentrality parameter`
 #     W     LR     RS     GR
 # 9.822 10.021  9.955 10.088
 #

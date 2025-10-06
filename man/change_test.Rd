@@ -4,18 +4,19 @@
 \alias{change_test}
 \title{Tests in context of measurement of change using LLTM.}
 \usage{
-change_test(X)
+change_test(data)
 }
 \arguments{
-\item{X}{Data matrix containing the responses of n persons to 2k binary items.
+\item{data}{Data matrix containing the responses of n persons to 2k binary items.
 Columns 1 to k contain the responses to k items at time point 1,
 and columns (k+1) to 2k the responses to the same k items at time point 2.}
 }
 \value{
-A list of test statistics, degrees of freedom, and p-values.
+A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
  \item{df}{Degrees of freedom.}
  \item{pvalue}{A vector of corresponding p-values.}
+  \item{data}{Data matrix.}
  \item{call}{The matched call.}
 }
 \description{
@@ -55,7 +56,7 @@ eta <- c(-2,-1,1,2,0)
 
 y <- eRm::sim.rasch(persons = rnorm(400), items = colSums(eta * t(W)))
 
-res <- change_test(X = y)
+res <- change_test(data = y)
 
 res$test # test statistics
 res$df # degrees of freedoms

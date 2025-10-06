@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # sa_sizeChange
 #
@@ -15,7 +13,7 @@
 # deviation from the hypothesis to be tested
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 2/9/2024
+# copyright (c) 2025, Last Modified 4/1/2025
 ######################################################################
 #' Sample size planning for tests in context of measurement of change using LLTM
 #'
@@ -111,17 +109,17 @@
 #' are drawn at random from the standard normal distribution. The larger this number the more accurate are the computations.
 #' See Details.
 #'
-#'@return A list results.
-#'  \item{informative sample size}{Informative sample size for each test, omitting persons with min. and max score.}
-#'  \item{MC error of sample size}{Monte Carlo error of sample size computation for each test.}
-#'  \item{deviation}{Shift parameter estimated from the simulated data representing the constant shift of item
+#'@return A list of results of class \code{tcl_sa_size}.
+#'  \item{sample_size_informative}{Informative sample size for each test, omitting persons with min. and max score.}
+#'  \item{mc_error_sample_size}{Monte Carlo error of sample size computation for each test.}
+#'  \item{dev}{Shift parameter estimated from the simulated data representing the constant shift of item
 #'  parameters between time points 1 and 2.}
-#'  \item{person score distribution}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
+#'  \item{score_dist}{Relative frequencies of person scores observed in simulated data. Uninformative scores,
 #'  i.e., minimum and maximum score, are omitted.
 #'  Note that the person score distribution does also have an influence on the sample size.}
-#'  \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
-#'  \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
-#'  \item{total sample size}{Total sample size for each test. See Details.}
+#'  \item{df}{Degrees of freedom \eqn{df}.}
+#'  \item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
+#'  \item{sample_size_total}{Total sample size for each test. See Details.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
@@ -148,34 +146,34 @@
 #'res <- sa_sizeChange(eta = eta)
 #'
 #'# > res
-#'# $`informative sample size`
+#'# $sample_size_informative #`informative sample size`
 #'#   W  LR  RS  GR
 #'# 177 174 175 173
 #'#
-#'# $`MC error of sample size`
+#'# $mc_error_sample_size #`MC error of sample size`
 #'#     W    LR    RS    GR
 #'# 1.321 1.287 1.299 1.276
 #'#
-#'# $`deviation (estimate of shift parameter)`
+#'# $dev #`deviation (estimate of shift parameter)`
 #'# [1] 0.501
 #'#
-#'# $`person score distribution`
+#'# $score_dist #`person score distribution`
 #'#
 #'#     1     2     3     4     5     6     7
 #'# 0.034 0.094 0.181 0.249 0.227 0.147 0.068
 #'#
-#'# $`degrees of freedom`
+#'# $df #`degrees of freedom`
 #'# [1] 1
 #'#
-#'# $`noncentrality parameter`
+#'# $ncp #`noncentrality parameter`
 #'# [1] 12.995
 #'#
-#'# $`total sample size`
+#'# $sample_size_total #`total sample size`
 #'#   W  LR  RS  GR
 #'# 182 179 180 178
 #'#
 #'# $call
-#'# sa_sizeChange(alpha = 0.05, beta = 0.05, eta = eta, persons = rnorm(10^6))
+#'# sa_sizeChange(eta = eta)
 #' }
 
 sa_sizeChange <- function(eta,
@@ -189,9 +187,9 @@ sa_sizeChange <- function(eta,
     se <- sqrt((2*df + 4*stats) * lambda0^2 * sum(t)^2 * {stats}^-4)
     n1 <- ceiling((n)/(sum(t)/nrow(y)))
 
-    return(list('informative sample size' = n,
-                'MC of sample size' = round(se, digits = 3),
-                'total sample size' = n1) )
+    return(list( sample_size_informative = n,
+                 mc_error_sample_size = round(se, digits = 3),
+                 sample_size_total = n1) )
   }
 
   call <- match.call()
@@ -213,17 +211,30 @@ sa_sizeChange <- function(eta,
   est <- eRm::LLTM(X = y, mpoints = 2,se = FALSE, sum0 = FALSE) # unrestricted CML estimates of eta Parameters
   dev <- unname(est$etapar[ncol(y)/2])
 
-  vstats <- change_test(X = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
+  vstats <- change_test(data = y)$test[c(4,2,3,1)] # W, LR, RS, GR test
 
   res <- lapply(vstats, subfunc)
 
-  results <- list(  'informative sample size' = unlist(do.call(cbind, res)[1,]),
-                    'MC error of sample size' = unlist(do.call(cbind, res)[2,]),
-                    'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
-                    'person score distribution' = round(t/sum(t), digits = 3),
-                    'degrees of freedom' = df,
-                    'noncentrality parameter' = round(lambda0, digits = 3),
-                    'total sample size' = unlist(do.call(cbind, res)[3,]),
-                    "call" = call)
+  # results <- list(  'informative sample size' = unlist(do.call(cbind, res)[1,]),
+  #                   'MC error of sample size' = unlist(do.call(cbind, res)[2,]),
+  #                   'deviation (estimate of shift parameter)' =  round(dev, digits = 3),
+  #                   'person score distribution' = round(t/sum(t), digits = 3),
+  #                   'degrees of freedom' = df,
+  #                   'noncentrality parameter' = round(lambda0, digits = 3),
+  #                   'total sample size' = unlist(do.call(cbind, res)[3,]),
+  #                   "call" = call)
+  results <- structure(
+    list(
+      sample_size_informative = unlist(do.call(cbind, res)[1, ]),
+      mc_error_sample_size = unlist(do.call(cbind, res)[2, ]),
+      dev = round(dev, digits = 3),
+      score_dist = round(t / sum(t), digits = 3),
+      df = df,
+      ncp = round(lambda0, digits = 3),
+      sample_size_total = unlist(do.call(cbind, res)[3, ]),
+      call = call
+    ),
+    class = "tcl_sa_size"
+  )
   return(results)
 }

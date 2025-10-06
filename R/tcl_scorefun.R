@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # tcl_scorefun
 #
@@ -12,7 +10,7 @@
 # using function eRm_cml
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 01/05/2021
+# copyright (c) 2025, Last Modified 04/01/2025
 ######################################################################
 #' Computation of score function.
 #'
@@ -20,11 +18,11 @@
 #'   (first order partial derivatives of conditional log likelihood function)
 #'   evaluated at arbitrary values of item easiness parameters.
 #'
-#' @param X data matrix.
+#' @param data data matrix.
 #' @param eta numeric vector of item easiness parameters.
 #' @param W design matrix.
-#' @param model RM, PCM, RSM, LLTM.
-#' @return Score function evaluated at eta
+#' @param model RM, PCM, RSM, LLTM. Default is set to "RM".
+#' @return Score function evaluated at eta.
 #'
 #' @references{
 #' Gilbert, P., Gilbert, M. P., & Varadhan, R. (2016). numDeriv: Accurate Numerical Derivatives. R package
@@ -37,10 +35,10 @@
 #' # Rasch model with beta_1 restricted to 0
 #' y <- eRm::raschdat1
 #' res <- eRm::RM(X = y, sum0 = FALSE)
-#' scorefun <- tcl_scorefun(X = y, eta = res$etapar, model = "RM")
+#' scorefun <- tcl_scorefun(data = y, eta = res$etapar, model = "RM")
 #' }
 
-tcl_scorefun<-function(X, eta, W, model = "RM") {
+tcl_scorefun <- function(data, eta, W, model = "RM") {
 # X = observed data matrix
 # eta - numeric vector of item easiness parameters
 # W = design matrix
@@ -48,8 +46,7 @@ tcl_scorefun<-function(X, eta, W, model = "RM") {
 
   if (!is.numeric(eta)) stop("eta needs to be a numeric vector!")
 
-  e <- eRm_cml(X = X, eta = eta, W = W, model = model)$scorefun
+  e <- eRm_cml(X = data, eta = eta, W = W, model = model)$scorefun
 
   return(e)
-
 }

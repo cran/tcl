@@ -4,19 +4,19 @@
 \alias{tcl_hessian}
 \title{Computation of Hessian matrix.}
 \usage{
-tcl_hessian(X, eta, W, model = "RM")
+tcl_hessian(data, eta, W, model = "RM")
 }
 \arguments{
-\item{X}{data matrix.}
+\item{data}{data matrix.}
 
 \item{eta}{numeric vector of item easiness parameters.}
 
 \item{W}{design matrix.}
 
-\item{model}{RM, PCM, RSM, LLTM.}
+\item{model}{RM, PCM, RSM, LLTM. Default is set to "RM".}
 }
 \value{
-Hessian matrix evaluated at eta
+Hessian matrix evaluated at eta.
 }
 \description{
 Uses function \code{hessian()} from numDeriv package to compute (approximate numerically) Hessian matrix
@@ -27,7 +27,7 @@ Uses function \code{hessian()} from numDeriv package to compute (approximate num
 # Rasch model with beta_1 restricted to 0
 y <- eRm::raschdat1
 res <- eRm::RM(X = y, sum0 = FALSE)
-mat <- tcl_hessian(X = y, eta = res$etapar, model = "RM")
+mat <- tcl_hessian(data = y, eta = res$etapar, model = "RM")
 
 }
 }

@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # LLTM_test
 #
@@ -13,11 +11,11 @@
 # for hypothisized linear restriction of item parameter space in Rasch model
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 02/05/2023
+# copyright (c) 2025, Last Modified 17/09/2025
 ######################################################################
 #' Testing linear restrictions on parameter space of item parameters of RM.
 #'
-#' Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics for
+#' Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test statistics for
 #'   hypotheses defined by linear restrictions on parameter space of the item parameters of RM.
 #'
 #' The RM item parameters are assumed to be linear in the LLTM parameters.
@@ -27,12 +25,13 @@
 #'  to psychological test items. The item parameters of the RM are assumed to be linear combinations
 #'  of these cognitive operations. These linear combinations are defined in the design matrix W.
 #'
-#' @param X Data matrix.
+#' @param data Data matrix.
 #' @param W Design matrix of LLTM.
-#' @return A list of test statistics, degrees of freedom, and p-values.
-#'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+#' @return A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+#'  \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
 #'  \item{df}{Degrees of freedom.}
 #'  \item{pvalue}{A vector of corresponding p-values.}
+#'  \item{data}{Data matrix.}
 #'  \item{call}{The matched call.}
 #' @references{
 #'  Fischer, G. H. (1995). The Linear Logistic Test Model. In G. H. Fischer & I. W. Molenaar (Eds.),
@@ -58,7 +57,7 @@
 #'
 #' y <- eRm::sim.rasch(persons = rnorm(400), items = b - b[1])  # sum0 = FALSE
 #'
-#' res <- LLTM_test(X = y, W = W )
+#' res <- LLTM_test(data = y, W = W )
 #'
 #' res$test # test statistics
 #' res$df # degrees of freedoms
@@ -66,7 +65,7 @@
 #'
 #'}
 
-LLTM_test <- function(X, W) {
+LLTM_test <- function(data, W) {
   # X = observed data matrix
   # W design matrix
 
@@ -81,7 +80,7 @@ LLTM_test <- function(X, W) {
   #               main programm
   ###################################################
 
-  y <- X
+  y <- data
 
   r.RM <- eRm::RM( y, se = FALSE, sum0 = FALSE)                 # general model
   r.LLTM  <- eRm::LLTM( y,  W = W,  se = FALSE, sum0 = FALSE)   # specific model nested in RM
@@ -127,7 +126,21 @@ LLTM_test <- function(X, W) {
   res.list <- list("test" = round(test.stats, digits = 3),
                    "df" = df,
                    "pvalue" = pvalue,
+                   "data" = y,
                    "call" = call)
+
+  # Define test order
+  test_order <- c("W", "LR", "RS", "GR")
+
+  # Reorder selected elements
+  for (nm in c("test", "pvalue")) {
+    res.list[[nm]] <- res.list[[nm]][test_order]
+  }
+
+  res.list <- structure(
+    res.list,
+    class = "tcl"
+  )
 
   return(res.list)
 }

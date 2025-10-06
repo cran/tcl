@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # change_test
 #
@@ -14,7 +12,7 @@
 # where one assumes all items presented twice to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2019, Last Modified 09/09/2019
+# copyright (c) 2025, Last Modified 17/09/2025
 ######################################################################
 #' Tests in context of measurement of change using LLTM.
 #'
@@ -28,13 +26,14 @@
 #'   Of interest is the test of the hypothesis that the shift parameter equals 0 against the two-sided
 #'   alternative that it is not equal to zero.
 #'
-#' @param X Data matrix containing the responses of n persons to 2k binary items.
+#' @param data Data matrix containing the responses of n persons to 2k binary items.
 #'   Columns 1 to k contain the responses to k items at time point 1,
 #'   and columns (k+1) to 2k the responses to the same k items at time point 2.
-#' @return A list of test statistics, degrees of freedom, and p-values.
+#' @return A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
 #'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
 #'  \item{df}{Degrees of freedom.}
 #'  \item{pvalue}{A vector of corresponding p-values.}
+#'   \item{data}{Data matrix.}
 #'  \item{call}{The matched call.}
 #' @references{
 #'  Fischer, G. H. (1995). The Linear Logistic Test Model. In G. H. Fischer & I. W. Molenaar (Eds.),
@@ -70,7 +69,7 @@
 #'
 #' y <- eRm::sim.rasch(persons = rnorm(400), items = colSums(eta * t(W)))
 #'
-#' res <- change_test(X = y)
+#' res <- change_test(data = y)
 #'
 #' res$test # test statistics
 #' res$df # degrees of freedoms
@@ -78,9 +77,9 @@
 #'
 #'}
 
-change_test <- function(X) {
+change_test <- function(data) {
 
-  # X = observed data matrix comprised of 2k columns (twice the number of times k)
+  # data = observed data matrix comprised of 2k columns (twice the number of times k)
   # representing 2k so-called virtual items
 
   call <- match.call()
@@ -92,12 +91,12 @@ change_test <- function(X) {
   ###################################################
   # design matrix with (k+1) columns: k eta parameter + shift parameter
   # with assumption shift par. equals 0 (no change from time point 1 to 2)
-  y <- X
+  y <- data
   k <- dim(y)[2] / 2  # number of items
 
   r  <- eRm::LLTM(y, mpoints = 2,se = TRUE, sum0 = FALSE)
 
-  W1 <- r$W[,1:(k - 1)]                       # design matrix W1 restricting shift parameter to 0
+  W1 <- r$W[ ,1:(k - 1)]                       # design matrix W1 restricting shift parameter to 0
 
   r1 <- eRm::LLTM( y , W = W1, sum0 = FALSE)
 
@@ -114,7 +113,7 @@ change_test <- function(X) {
 
   LR <- (r1$loglik -  r$loglik) * (-2) # LR test
 
-  RS <- sum ( colSums( (rest.1$scorefun * solve(rest.1$hessian) )) * rest.1$scorefun ) # score test
+  RS <- sum( colSums( (rest.1$scorefun * solve(rest.1$hessian) )) * rest.1$scorefun ) # score test
 
   GR <- sum(rest.1$scorefun * -eta.unrest)    # gradient test statistic
 
@@ -130,8 +129,21 @@ change_test <- function(X) {
   res.list <- list("test" = round(test.stats, digits = 3),
                    "df" = df,
                    "pvalue" = pvalue,
-                   # "pvalue" = round(pvalue, digits = 3),
+                   "data" = y,
                    "call" = call)
+
+  # Define test order
+  test_order <- c("W", "LR", "RS", "GR")
+
+  # Reorder selected elements
+  for (nm in c("test", "pvalue")) {
+    res.list[[nm]] <- res.list[[nm]][test_order]
+  }
+
+  res.list <- structure(
+    res.list,
+    class = "tcl"
+  )
 
   return(res.list)
 }

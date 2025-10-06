@@ -22,7 +22,7 @@ eRm_cml <- function(X, eta, W, model = "RM") {
   # W = design matrix
   # model = RM, PCM, RSM, LLTM
 
-  call<-match.call()
+  call <- match.call()
 
   # Default values
   mpoints <- 1    # LPCM, LRSM, LLTM

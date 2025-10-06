@@ -5,7 +5,8 @@
 \title{Sample size planning for tests of invariance of item parameters between two groups of persons in binary Rasch model}
 \usage{
 sa_sizeRM(
-  local_dev,
+  obj = NULL,
+  local_dev = NULL,
   alpha = 0.05,
   beta = 0.05,
   persons1 = rnorm(10^6),
@@ -13,8 +14,12 @@ sa_sizeRM(
 )
 }
 \arguments{
+\item{obj}{An object of class `LR` from the `eRm` package. If provided, `local_dev` is extracted automatically.
+If missing, `local_dev` must be set manually.}
+
 \item{local_dev}{A list consisting of two vectors containing item parameters for the two person groups
-representing a deviation from the hypothesis to be tested locally per item.}
+representing a deviation from the hypothesis to be tested locally per item.
+Note that the ‘reference category’, i.e. the first item parameter, also needs to be listed and set to zero.}
 
 \item{alpha}{Probability of the error of first kind.}
 
@@ -29,22 +34,22 @@ number the more accurate are the computations. See Details.}
 number the more accurate are the computations. See Details.}
 }
 \value{
-A list of results.
- \item{informative sample size}{Informative sample size for each test omitting persons with min. and max score.}
- \item{MC error of sample size}{Monte Carlo error of informative sample size for each test.}
- \item{global deviation}{Global deviation computed from simulated data. See Details.}
- \item{local deviation}{CML estimates of free item parameters in both groups obtained from the simulated data.
+A list of results of class \code{tcl_sa_size}.
+ \item{sample_size_informative}{Informative sample size for each test omitting persons with min. and max score.}
+ \item{mc_error_sample_size}{Monte Carlo error of informative sample size for each test.}
+ \item{dev_global}{Global deviation computed from simulated data. See Details.}
+ \item{dev_local}{CML estimates of free item parameters in both groups obtained from the simulated data.
  First item parameter set 0 in both groups.}
- \item{person score distribution in group 1}{Relative frequencies of person scores in group 1 observed in simulated data.
+ \item{score_dist_group1}{Relative frequencies of person scores in group 1 observed in simulated data.
  Uninformative scores, i.e., minimum and maximum score, are omitted.
  Note that the person score distribution does also have an influence on the sample size.}
- \item{person score distribution in group 2}{Relative frequencies of person scores in group 2 observed in simulated data.
+ \item{score_dist_group2}{Relative frequencies of person scores in group 2 observed in simulated data.
  Uninformative scores, i.e., minimum and maximum score, are omitted.
  Note that the person score distribution does also have an influence on the sample size.}
- \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
- \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
- \item{total sample size in group 1}{Total sample size in group 1 for each test. See Details.}
- \item{total sample size in group 1}{Total sample size in group 2 for each test. See Details.}
+ \item{df}{Degrees of freedom \eqn{df}.}
+ \item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
+ \item{sample_size_total_group1}{Total sample size in group 1 for each test. See Details.}
+ \item{sample_size_total_group2}{Total sample size in group 2 for each test. See Details.}
  \item{call}{The matched call.}
 }
 \description{
@@ -146,50 +151,58 @@ computation procedure. It is called Monte Carlo error of informative sample size
 res <-  sa_sizeRM(local_dev = list( c(0, -0.5, 0, 0.5, 1) , c(0, 0.5, 0, -0.5, 1)))
 
 # > res
-# $`informative sample size`
+# $sample_size_informative #`informative sample size`
 #   W  LR  RS  GR
 # 159 153 155 151
 #
-# $`MC error of sample size`
+# $mc_error_sample_siz #`MC error of sample size`
 #     W    LR    RS    GR
 # 0.721 0.682 0.695 0.670
 #
-# $`global deviation`
+# $dev_global #`global deviation`
 #     W    LR    RS    GR
 # 0.117 0.122 0.120 0.123
 #
-# $`local deviation`
+# $dev_local #`local deviation`
 #         Item2  Item3  Item4 Item5
 # group1 -0.502 -0.005  0.497 1.001
 # group2  0.495 -0.006 -0.501 0.994
 #
-# $`person score distribution in group 1`
+# $score_dist_group1 #`person score distribution in group 1`
 #
 #     1     2     3     4
 # 0.249 0.295 0.268 0.188
 #
-# $`person score distribution in group 2`
+# $score_dist_group2 #`person score distribution in group 2`
 #
 #     1     2     3     4
 # 0.249 0.295 0.270 0.187
 #
-# $`degrees of freedom`
+# $df #`degrees of freedom`
 # [1] 4
 #
-# $`noncentrality parameter`
+# $ncp #`noncentrality parameter`
 # [1] 18.572
 #
-# $`total sample size in group 1`
+# $sample_size_total_group1 #`total sample size in group 1`
 #  W LR RS GR
 # 97 93 94 92
 #
-# $`total sample size in group 2`
+# $sample_size_total_group2 #`total sample size in group 2`
 #  W LR RS GR
 # 97 93 94 92
 #
 # $call
 # sa_sizeRM(local_dev = list(c(0, -0.5, 0, 0.5, 1),
 #                            c(0, 0.5, 0, -0.5, 1)))
+#
+##### Sample size of Rasch Model #####
+# extracting local_dev from an eRm object
+dat = eRm::sim.rasch(1000,10)
+mod = eRm::RM(dat)
+
+obj <- eRm::LRtest(mod)
+res <- sa_sizeRM(obj = obj)
 }
 }
 \references{
@@ -199,8 +212,8 @@ Draxler, C. (2010). Sample Size Determination for Rasch Model Tests. Psychometri
 Draxler, C., & Alexandrowicz, R. W. (2015). Sample Size Determination Within the Scope of Conditional Maximum Likelihood Estimation
 with Special Focus on Testing the Rasch Model. Psychometrika, 80(4), 897–919.
 
-Draxler, C., Kurz, A., & Lemonte, A. J. (2020). The Gradient Test and its Finite Sample Size Properties in a Conditional Maximum Likelihood
-and Psychometric Modeling Context. Communications in Statistics-Simulation and Computation, 1-19.
+Draxler, C., Kurz, A., & Lemonte, A. J. (2022). The gradient test and its finite sample size properties in a conditional
+maximum likelihood and psychometric modeling context. Communications in Statistics-Simulation and Computation, 51(6), 3185-3203.
 
 Glas, C. A. W., & Verhelst, N. D. (1995a). Testing the Rasch Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 Rasch Models: Foundations, Recent Developments, and Applications (pp. 69–95). New York: Springer.

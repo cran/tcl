@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # invar_test
 #
@@ -14,11 +12,11 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 02/05/2023
+# copyright (c) 2025, Last Modified 02/01/2025
 ######################################################################
 #' Test of invariance of item parameters between two groups.
 #'
-#' Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics
+#' Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test statistics
 #'   for hypothesis of equality of item parameters between two groups of persons against a two-sided
 #'  alternative that at least one item parameter differs between the two groups.
 #'
@@ -28,7 +26,7 @@
 #'  or both subgroups only RS will be computed. If the model is not identified from the total data,
 #'  no test statistic is computable.
 #'
-#' @param X Data matrix.
+#' @param data Data matrix.
 #' @param splitcr Split criterion which is either "mean", "median" or a numeric vector x.
 #' \describe{
 #'  \item{"mean"}{Corresponds to division of the sample according to the mean of the person score.}
@@ -37,11 +35,15 @@
 #'   }
 #'
 #' @param model RM, PCM, RSM
-#' @return A list of test statistics, degrees of freedom, and p-values.
-#'  \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+#' @return A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+#'  \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
 #'  \item{df}{A numeric vector of corresponding degrees of freedom.}
 #'  \item{pvalue}{A vector of corresponding p-values.}
 #'  \item{deleted_items}{A list with numeric vectors of item numbers that were excluded before computing corresponding test statistics.}
+#'  \item{sample_size_informative}{Informative sample size of data omitting persons with min. and max score.}
+#'  \item{effect}{Numeric value for each test representing the effect size. A real number between 0 and 1, interpreted as
+#'  a proportion of pseudo -variance between the two groups of persons considered.}
+#'  \item{data}{Data matrix.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
@@ -50,8 +52,8 @@
 #' Draxler, C., & Alexandrowicz, R. W. (2015). Sample Size Determination Within the Scope of Conditional Maximum Likelihood Estimation
 #' with Special Focus on Testing the Rasch Model. Psychometrika, 80(4), 897–919.
 #'
-#' Draxler, C., Kurz, A., & Lemonte, A. J. (2020). The Gradient Test and its Finite Sample Size Properties in a Conditional Maximum Likelihood
-#' and Psychometric Modeling Context. Communications in Statistics-Simulation and Computation, 1-19.
+#' Draxler, C., Kurz, A., & Lemonte, A. J. (2022). The gradient test and its finite sample size properties in a conditional
+#' maximum likelihood and psychometric modeling context. Communications in Statistics-Simulation and Computation, 51(6), 3185-3203.
 #'
 #' Glas, C. A. W., & Verhelst, N. D. (1995a). Testing the Rasch Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 #' Rasch Models: Foundations, Recent Developments, and Applications (pp. 69–95). New York: Springer.
@@ -69,7 +71,7 @@
 #'y <- eRm::sim.rasch(persons = rnorm(400), c(0,-3,-2,-1,0,1,2,3))
 #'x <- c(rep(1,200),rep(0,200))
 #'
-#'res <- invar_test(y, splitcr = x, model = "RM")
+#'res <- invar_test(data = y, splitcr = x, model = "RM")
 #'
 #'res$test # test statistics
 #'res$df # degrees of freedoms
@@ -77,16 +79,16 @@
 #'res$deleted_items # excluded items
 #'
 #'$test
-#'   GR    LR    RS     W
-#'14.492 14.083 13.678 12.972
+#'     W     LR     RS     GR
+#'14.972 14.083 13.678 12.492
 #'
 #'$df
-#'GR LR RS  W
+#' W LR RS GR
 #' 7  7  7  7
 #'
 #'$pvalue
-#'   GR    LR    RS     W
-#'"0.043" "0.050" "0.057" "0.073"
+#'    W      LR      RS     GR
+#'"0.073" "0.050" "0.057" "0.043"
 #'
 #'$deleted_items
 #'  $deleted_items$GR
@@ -101,22 +103,30 @@
 #'  $deleted_items$W
 #'  [1] "none"
 #'
+#' $sample_size_informative
+#' [1] 395
+#'
+#' $effect
+#'     W    LR    RS    GR
+#' 0.014 0.014 0.014 0.014
 #'
 #'$call
 #'invar_test(X = y, splitcr = x, model = "RM")
 #'
 #'}
 
-invar_test <- function(X, splitcr = "median", model = "RM"){
-  # X = observed data matrix comprised of k columns
+invar_test <- function(data, splitcr = "median", model = "RM"){
+  # data = observed data matrix comprised of k columns
   # splitcr... splitting criterion for 2 covariate groups.
   #   "median"  corresponds to a median person score split,
   #   "mean" corresponds to the mean person score split.
   #    vector of length n containing zeros or ones only for sample split
   #        (group 1 = '1', group 2 = '0')
   # model = RM, PCM, RSM
+  cat("[START] Starting computation ...\n")
 
   call <- match.call()
+  X <- as.matrix(data)
 
   #---------------------------------------------------------------------
   # check of data matrix X for
@@ -192,6 +202,24 @@ invar_test <- function(X, splitcr = "median", model = "RM"){
                      "deleted_items" = list(  "GR" = NA,"LR" = NA,"RS" = del_pos_full,"W" = NA)) # addded AK 20-02-2022
   }
 
+  res.list$sample_size_informative <- n_info_data(data = X)
+  res.list$effect = res.list$test / res.list$sample_size_informative
+  res.list$data <- X
   res.list$call <- call
+
+  # Define test order
+  test_order <- c("W", "LR", "RS", "GR")
+
+  # Reorder selected elements
+  for (nm in c("test", "df", "pvalue", "effect")) {
+    res.list[[nm]] <- res.list[[nm]][test_order]
+  }
+
+  cat("\n[OK] Computation completed successfully!\n")
+
+  res.list <- structure(
+    res.list,
+    class = "tcl"
+  )
   return(res.list)
 }

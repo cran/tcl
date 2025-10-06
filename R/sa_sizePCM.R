@@ -1,8 +1,6 @@
-######################################################################
-# UMIT - Private University for Health Sciences,
-#        Medical Informatics and Technology
-#        Institute of Psychology
-#        Statistics and Psychometrics Working Group
+##############################################################################
+# UMIT Tirol -  Private University for Health Sciences and Health Technology
+#   Institute of Psychology, Statistics and Psychometrics Working Group
 #
 # sa_sizePCM
 #
@@ -15,7 +13,7 @@
 # where one assumes all items presented to all persons.
 #
 # Licensed under the GNU General Public License Version 3 (June 2007)
-# copyright (c) 2021, Last Modified 2/9/2024
+# copyright (c) 2025, Last Modified 10/2/2025
 ######################################################################
 #' Sample size planning for tests of invariance of item-category parameters between two groups of persons in partial credit model
 #'
@@ -110,6 +108,8 @@
 #'quantify the random error of the suggested Monte Carlo computation procedure. It is called Monte Carlo
 #'error of informative sample size.
 #'
+#' @param obj An object of class `LR` from the `eRm` package. If provided, `local_dev` is extracted automatically.
+#' If missing, `local_dev` must be set manually.
 #' @param local_dev A list consisting of two lists. One list refers to group 1, the other to group 2. Each of the two lists
 #' contains a numerical vector per item, i.e., each list contains as many vectors as items. Each vector contains the free
 #' item-cat. parameters of the respective item. The number of free item-cat. parameters per item equals the number of
@@ -123,22 +123,22 @@
 #' parameters are drawn at random from the standard normal distribution. The larger this number the more accurate are
 #' the computations. See Details.
 #'
-#'@return A list of results.
-#'  \item{informative sample size}{Informative sample size for each test, omitting persons with min. and max score.}
-#'  \item{MC error of sample size}{Monte Carlo error of informative sample size for each test.}
-#'  \item{global deviation}{Global deviation computed from simulated data. See Details.}
-#'  \item{local deviation}{CML estimates of free item-category parameters in both group of persons obtained from the simulated
+#'@return A list of results of class \code{tcl_sa_size}.
+#'  \item{sample_size_informative}{Informative sample size for each test, omitting persons with min. and max score.}
+#'  \item{mc_error_sample_size}{Monte Carlo error of informative sample size for each test.}
+#'  \item{dev_global}{Global deviation computed from simulated data. See Details.}
+#'  \item{dev_local}{CML estimates of free item-category parameters in both group of persons obtained from the simulated
 #'  data expressing a deviation from the hypothesis to be tested locally per item and response category.}
-#'  \item{person score distribution in group 1}{Relative frequencies of person scores in group 1 observed in simulated data.
+#'  \item{score_dist_group1}{Relative frequencies of person scores in group 1 observed in simulated data.
 #'  Uninformative scores, i.e., minimum and maximum score, are omitted.
 #'  Note that the person score distribution does also have an influence on the sample size.}
-#'  \item{person score distribution in group 2}{Relative frequencies of person scores in group 2 observed in simulated data.
+#'  \item{score_dist_group2}{Relative frequencies of person scores in group 2 observed in simulated data.
 #'  Uninformative scores, i.e., minimum and maximum score, are omitted.
 #'  Note that the person score distribution does also have an influence on the sample size.}
-#'  \item{degrees of freedom}{Degrees of freedom \eqn{df}.}
-#'  \item{noncentrality parameter}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
-#'  \item{total sample size in group 1}{Total sample size in group 1 for each test. See Details.}
-#'  \item{total sample size in group 1}{Total sample size in group 2 for each test. See Details.}
+#'  \item{df}{Degrees of freedom \eqn{df}.}
+#'  \item{ncp}{Noncentrality parameter \eqn{\lambda} of \eqn{\chi^2} distribution from which sample size is determined.}
+#'  \item{sample_size_total_group1}{Total sample size in group 1 for each test. See Details.}
+#'  \item{sample_size_total_group2}{Total sample size in group 2 for each test. See Details.}
 #'  \item{call}{The matched call.}
 #'
 #' @references{
@@ -147,8 +147,8 @@
 #' Draxler, C., & Alexandrowicz, R. W. (2015). Sample Size Determination Within the Scope of Conditional Maximum Likelihood Estimation
 #' with Special Focus on Testing the Rasch Model. Psychometrika, 80(4), 897–919.
 #'
-#' Draxler, C., Kurz, A., & Lemonte, A. J. (2020). The Gradient Test and its Finite Sample Size Properties in a Conditional Maximum Likelihood
-#' and Psychometric Modeling Context. Communications in Statistics-Simulation and Computation, 1-19.
+#' Draxler, C., Kurz, A., & Lemonte, A. J. (2022). The gradient test and its finite sample size properties in a conditional
+#' maximum likelihood and psychometric modeling context. Communications in Statistics-Simulation and Computation, 51(6), 3185-3203.
 #'
 #' Glas, C. A. W., & Verhelst, N. D. (1995a). Testing the Rasch Model. In G. H. Fischer & I. W. Molenaar (Eds.),
 #' Rasch Models: Foundations, Recent Developments, and Applications (pp. 69–95). New York: Springer.
@@ -168,61 +168,93 @@
 #' local_dev <-  list (  list(c( 0, 0), c( -1, 0), c( 0, 0),  c( 1, 0), c( 1, 0.5)) ,
 #'                       list(c( 0, 0), c( -1, 0), c( 0, 0),  c( 1, 0), c( 0, -0.5))  )
 #'
-#' res <- sa_sizePCM(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
-#'                   persons2 = rnorm(10^6), local_dev = local_dev)
+#' res <- sa_sizePCM(local_dev = local_dev, alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
+#'                   persons2 = rnorm(10^6))
 #'
 #'# > res
-#'# $`informative sample size`
+#'# $sample_size_informative #`informative sample size`
 #'#   W  LR  RS  GR
 #'# 234 222 227 217
 #'#
-#'# $`MC error of sample size`
+#'# $mc_error_sample_size #`MC error of sample size`
 #'#     W    LR    RS    GR
 #'# 1.105 1.018 1.053 0.988
 #'#
-#'# $`global deviation`
+#'# $dev_global  #`global deviation`
 #'#     W    LR    RS    GR
 #'# 0.101 0.107 0.104 0.109
 #'#
-#'# $`local deviation`
+#'# $dev_local #`local deviation`
 #'#          I1-C2  I2-C1  I2-C2  I3-C1  I3-C2 I4-C1 I4-C2 I5-C1  I5-C2
 #'# group1 -0.001 -1.000 -1.001 -0.003 -0.011 0.997 0.998 0.996  1.492
 #'# group2  0.001 -0.998 -0.996 -0.007 -0.007 0.991 1.001 0.004 -0.499
 #'#
-#'# $`person score distribution in group 1`
+#'# $score_dist_group1 #`person score distribution in group 1`
 #'#
 #'#     1     2     3     4     5     6     7     8     9
 #'# 0.111 0.130 0.133 0.129 0.122 0.114 0.101 0.091 0.070
 #'#
-#'# $`person score distribution in group 2`
+#'# $score_dist_group2 #`person score distribution in group 2`
 #'#
 #'#     1     2     3     4     5     6     7     8     9
 #'# 0.090 0.109 0.117 0.121 0.121 0.121 0.116 0.111 0.093
 #'#
-#'# $`degrees of freedom`
+#'# $df #`degrees of freedom`
 #'# [1] 9
 #'#
-#'# $`noncentrality parameter`
+#'# $ncp #`noncentrality parameter`
 #'# [1] 23.589
 #'#
-#'# $`total sample size in group 1`
+#'# $sample_size_total_group1 #`total sample size in group 1`
 #'#   W  LR  RS  GR
 #'# 132 125 128 123
 #'#
-#'# $`total sample size in group 2`
+#'# $sample_size_total_group2 #`total sample size in group 2`
 #'#   W  LR  RS  GR
 #'# 133 126 129 123
 #'#
 #'# $call
 #'# sa_sizePCM(alpha = 0.05, beta = 0.05, persons1 = rnorm(10^6),
 #'#            persons2 = rnorm(10^6), local_dev = local_dev)
+#'
+#'
+#'# Sample size of of PCM
+#'# extracting local_dev from an eRm object
+#'ppar = rnorm(10000)
+#'ipar = list(-2:2,-2:2+0.2,-2:2-0.3,-2:2+0.1,-2:2-0.8)
+#'dat2 = psychotools::rpcm(theta = ppar, delta = ipar)
+#'
+#'mod2 = PCM(dat2$data)
+#'obj2 = eRm::LRtest(mod2)
+#'
+#'res <- sa_sizePCM(obj = obj2)
 #' }
 
-sa_sizePCM <- function(local_dev,
-                       alpha = 0.05,
-                       beta = 0.05,
-                       persons1 = rnorm(10^6),
-                       persons2 = rnorm(10^6)) {
+sa_sizePCM <- function(obj = NULL, local_dev = NULL, alpha = 0.05, beta = 0.05,
+                       persons1 = rnorm(10^6), persons2 = rnorm(10^6)) {
+  # If obj is provided, extract local_dev
+  if (!is.null(obj)) {
+    stopifnot("obj must be of eRm class 'LR'" = inherits(obj, "LR"))
+    local_dev <- get_eRm_arg(obj, arg = "local_dev")
+    message("Extracted local_dev from obj.")
+  }
+
+  # If local_dev is still NULL, stop with an error
+  if (is.null(local_dev)) {
+    stop("Either 'obj' (of eRm class 'LR') or 'local_dev' must be provided.")
+  }
+
+  # Call sample size function with extracted or provided local_dev
+  results <- sa_sizePCM_compute(local_dev, alpha, beta, persons1, persons2)
+  return(results)
+}
+
+#' @noRd
+sa_sizePCM_compute <- function(local_dev,
+                               alpha = 0.05,
+                               beta = 0.05,
+                               persons1 = rnorm(10^6),
+                               persons2 = rnorm(10^6)) {
 
   subfunc <- function(stats) {
     e <- stats/(sum(t1) + sum(t2))
@@ -230,11 +262,14 @@ sa_sizePCM <- function(local_dev,
     se <- sqrt((2*df + 4*stats) * lambda0^2 * (sum(t1) + sum(t2))^2 * (stats)^-4)
     n1 <- ceiling((n/2)/(sum(t1)/nrow(y1)))
     n2 <- ceiling((n/2)/(sum(t2)/nrow(y2)))
-    return(list('informative sample size' = n,
-                'MC error of sample size' = round(se, digits = 3),
-                'global deviation' = round(e, digits = 3),
-                'total sample size in group 1' = n1,
-                'total sample size in group 2' = n2 ))
+
+    return(list(
+      sample_size_informative = n,
+      mc_error_sample_size = round(se, digits = 3),
+      dev_global = round(e, digits = 3),
+      sample_size_total_group1 = n1,
+      sample_size_total_group2 = n2
+    ))
   }
 
   call <- match.call()
@@ -270,16 +305,21 @@ sa_sizePCM <- function(local_dev,
 
   res <- lapply(vstats, subfunc)
 
-  results <- list(  'informative sample size' = unlist(do.call(cbind, res)[1,]),
-                    'MC error of sample size' = unlist(do.call(cbind, res)[2,]),
-                    'global deviation' = unlist(do.call(cbind, res)[3,]),
-                    'local deviation' = round(rbind("group1" = r1$coefficients, "group2" = r2$coefficients), digits = 3),
-                    'person score distribution in group 1' = round(t1/sum(t1), digits = 3),
-                    'person score distribution in group 2' = round(t2/sum(t2), digits = 3),
-                    'degrees of freedom' = df,
-                    'noncentrality parameter' = round(lambda0, digits = 3),
-                    'total sample size in group 1' = unlist(do.call(cbind, res)[4,]),
-                    'total sample size in group 2' = unlist(do.call(cbind, res)[5,]),
-                    "call" = call)
+  results <- structure(
+    list(
+      sample_size_informative = unlist(do.call(cbind, res)[1, ]),
+      mc_error_sample_size = unlist(do.call(cbind, res)[2, ]),
+      dev_global = unlist(do.call(cbind, res)[3, ]),
+      dev_local = round(rbind(group1 = r1$coefficients, group2 = r2$coefficients), digits = 3),
+      score_dist_group1 = round(t1 / sum(t1), digits = 3),
+      score_dist_group2 = round(t2 / sum(t2), digits = 3),
+      df = df,
+      ncp = round(lambda0, digits = 3),
+      sample_size_total_group1 = unlist(do.call(cbind, res)[4, ]),
+      sample_size_total_group2 = unlist(do.call(cbind, res)[5, ]),
+      call = call
+    ),
+    class = "tcl_sa_size"
+  )
   return(results)
 }

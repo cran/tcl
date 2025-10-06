@@ -4,20 +4,21 @@
 \alias{discr_test}
 \title{Testing item discriminations}
 \usage{
-discr_test(X)
+discr_test(data)
 }
 \arguments{
-\item{X}{Data matrix.}
+\item{data}{Data matrix.}
 }
 \value{
-A list of test statistics, degrees of freedom, and p-values.
- \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+ \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR)statistics.}
  \item{df}{A numeric vector of corresponding degrees of freedom.}
  \item{pvalue}{A vector of corresponding p-values.}
+ \item{data}{Data matrix.}
  \item{call}{The matched call.}
 }
 \description{
-Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test of
+Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test of
  hypothesis of equal item discriminations against the
   alternative that at least one item discriminates differently (only for binary data).
 }
@@ -48,17 +49,17 @@ library(sirt)
 data(data.pisaMath)
 y <- data.pisaMath$data[, grep(names(data.pisaMath$data), pattern = "M" )]
 
-res <- discr_test(X = y)
+res <- discr_test(data = y)
 # $test
-# GR     LR     RS      W
-# 72.430 73.032 76.725 73.470
+#      W     LR     RS     GR
+# 72.470 73.032 76.725 73.430
 #
 # $df
-# GR LR RS  W
+# W LR RS  GR
 # 10 10 10 10
 #
 # $pvalue
-#       GR        LR        RS         W
+#       W        LR        RS         GR
 # "< 0.001" "< 0.001" "< 0.001" "< 0.001"
 #
 # $call
@@ -68,8 +69,8 @@ res <- discr_test(X = y)
 }
 \references{
 {
-Draxler, C., Kurz. A., Gürer, C., & Nolte, J. P. (2024). An improved inferential procedure to evaluate item
-discriminations in a conditional maximum likelihood framework. Manuscript submitted for publication.
+Draxler, C., Kurz, A., Guerer, C., & Nolte, J. P. (2024). An Improved Inferential Procedure to Evaluate Item Discriminations
+in a Conditional Maximum Likelihood Framework. \emph{Journal of Educational and Behavioral Statistics}, 49(3), 403-430.
 
  }
 }

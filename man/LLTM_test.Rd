@@ -4,22 +4,23 @@
 \alias{LLTM_test}
 \title{Testing linear restrictions on parameter space of item parameters of RM.}
 \usage{
-LLTM_test(X, W)
+LLTM_test(data, W)
 }
 \arguments{
-\item{X}{Data matrix.}
+\item{data}{Data matrix.}
 
 \item{W}{Design matrix of LLTM.}
 }
 \value{
-A list of test statistics, degrees of freedom, and p-values.
- \item{test}{A numeric vector of gradient (GR), likelihood ratio (LR), Rao score (RS), and Wald test statistics.}
+A list of class \code{tcl} of test statistics, degrees of freedom, and p-values.
+ \item{test}{A numeric vector of Wald (W), likelihood ratio (LR), Rao score (RS), and gradient (GR) test statistics.}
  \item{df}{Degrees of freedom.}
  \item{pvalue}{A vector of corresponding p-values.}
+ \item{data}{Data matrix.}
  \item{call}{The matched call.}
 }
 \description{
-Computes gradient (GR), likelihood ratio (LR), Rao score (RS) and Wald (W) test statistics for
+Computes Wald (W), likelihood ratio (LR), Rao score (RS) and gradient (GR) test statistics for
   hypotheses defined by linear restrictions on parameter space of the item parameters of RM.
 }
 \details{
@@ -45,7 +46,7 @@ b <- colSums(eta * t(W))
 
 y <- eRm::sim.rasch(persons = rnorm(400), items = b - b[1])  # sum0 = FALSE
 
-res <- LLTM_test(X = y, W = W )
+res <- LLTM_test(data = y, W = W )
 
 res$test # test statistics
 res$df # degrees of freedoms
